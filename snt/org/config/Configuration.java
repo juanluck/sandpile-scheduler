@@ -75,6 +75,16 @@ public class Configuration {
 	//-------------------------
 	public static double rewiring;
 	
+	
+	//Initial Workload assignation: It can be "random", "frontend" or "roundrobin"
+	public static String assignation = "frontend"; 
+	
+	//It disables the sandpile when is set to false; default is true
+	public static boolean sandpile=true;
+	
+	//It identifies the experiment with the following values: exper+"_"+seed+"_"+
+	public static String exper;
+	
 	public static void setConfiguration(LoadProperties lp){
 
 		// + Architecture
@@ -120,6 +130,12 @@ public class Configuration {
 		
 		//WS rewiring
 		rewiring= Double.valueOf(lp.getProperty("rewiring","0.1"));
+		
+		//Init. assignation
+		assignation = lp.getProperty("assignation", "frontend");
+		
+		//Activate sandpile
+		sandpile= Boolean.valueOf(lp.getProperty("sandpile", "true"));
 		
 		
 	}

@@ -10,6 +10,8 @@ public class Node {
 	PileInNode _pile;
 	boolean selected = false;
 	
+
+	
 	
 	public Node(PileInNode pile) {
 		_pile = pile;
@@ -28,42 +30,46 @@ public class Node {
 	}
 	
 	public void executeUpdate(){
-	
-		selected = true;// To avoid cycles in the recursive call
-		int localgrains = _pile.size();
-		
-
-		ArrayList<Node> selectedneighbours = selectTwoRandomNeighbours();
-
-		int grainsneighbours=0;
-		for(int i=0; i<selectedneighbours.size();i++){
-			grainsneighbours+=selectedneighbours.get(i).get_pile().size();
-		}
-		
-		if (localgrains > grainsneighbours && localgrains > 1){
+		if (_pile._triggered){
+			selected = true;// To avoid cycles in the recursive call
+			int localgrains = _pile.size();
 			
-			int avggrains = (int)((localgrains+grainsneighbours)/(selectedneighbours.size()+1));  // Number of grains transmitted to selected neighbors for routing
-			int mingrains = (int)((localgrains+grainsneighbours)/10.0); ; // The avalanche stops when the number of grains are 1/8 of the initial topple
-																		 // e.g. if there are 1000 task the avalanche stops for routings < 125 grains; 
-																		 // The purpose is reducing the number of lookups done and then reducing communications
-																		 // in the example above (1000 task) the worst-case would lead to 6 lookups, while without a limit would suppose ~126 lookups
-			if (mingrains<1)
-				mingrains=1;
-		
-			
+
+			ArrayList<Node> selectedneighbours = selectTwoRandomNeighbours();
+
+			int grainsneighbours=0;
 			for(int i=0; i<selectedneighbours.size();i++){
-				int neighboursgrains = selectedneighbours.get(i)._pile.size();
-				selectedneighbours.get(i).routingRequest(_pile, _pile.get_indexpile(), avggrains-neighboursgrains, mingrains);
-				System.out.println("GRANOS:"+(avggrains-neighboursgrains));
+				grainsneighbours+=selectedneighbours.get(i).get_pile().size_transfer();
 			}
+			
+			if (localgrains > grainsneighbours && localgrains > 1){
 				
-		}else{
-			for(int i=0; i<selectedneighbours.size();i++){
-				selectedneighbours.get(i).selected=false;
+				int avggrains = (int)((localgrains+grainsneighbours)/(selectedneighbours.size()+1));  // Number of grains transmitted to selected neighbors for routing
+				int mingrains = (int)((localgrains+grainsneighbours)/10.0); ; // The avalanche stops when the number of grains are 1/8 of the initial topple
+																			 // e.g. if there are 1000 task the avalanche stops for routings < 125 grains; 
+																			 // The purpose is reducing the number of lookups done and then reducing communications
+																			 // in the example above (1000 task) the worst-case would lead to 6 lookups, while without a limit would suppose ~126 lookups
+				if (mingrains<1)
+					mingrains=1;
+			
+				
+				for(int i=0; i<selectedneighbours.size();i++){
+					int neighboursgrains = selectedneighbours.get(i)._pile.size_transfer();
+					selectedneighbours.get(i).routingRequest(_pile, _pile.get_indexpile(), avggrains-neighboursgrains, mingrains);
+					System.out.println("GRANOS:"+(avggrains-neighboursgrains));
+				}
+					
+			}else{
+				for(int i=0; i<selectedneighbours.size();i++){
+					selectedneighbours.get(i).selected=false;
+				}
 			}
+			
+			selected = false;			
+		}else{
+			//System.out.println("No");
 		}
-		
-		selected = false;
+	
 	}
 	
 
@@ -77,7 +83,7 @@ public class Node {
 					origin.graintopple(_pile);
 				System.out.println("Consumo en 1: "+virtualgrains);
 			}else{
-				int localgrains= _pile.size();
+				int localgrains= _pile.size_transfer();
 				int vlocalgrains= localgrains+virtualgrains;
 				
 				ArrayList<Node> selectedneighbours = selectTwoRandomNeighboursWOSender(sender);
@@ -89,7 +95,7 @@ public class Node {
 				}else{
 					int grainsneighbours=0;
 					for(int i=0; i<selectedneighbours.size();i++){
-						grainsneighbours+=selectedneighbours.get(i).get_pile().size();
+						grainsneighbours+=selectedneighbours.get(i).get_pile().size_transfer();
 					}
 					
 					if(vlocalgrains > grainsneighbours){
@@ -109,7 +115,7 @@ public class Node {
 							
 						int enviados=0;
 						for(int i=0; i<selectedneighbours.size() ; i++){
-							int neighboursgrains = selectedneighbours.get(i)._pile.size();
+							int neighboursgrains = selectedneighbours.get(i)._pile.size_transfer();
 							int grainsforneighbour = (int) avggrains - neighboursgrains;
 							if (remaining > 0){
 								if(grainsforneighbour < remaining){

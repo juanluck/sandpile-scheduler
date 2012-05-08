@@ -23,6 +23,8 @@ public class PileInNode {
 	
 	private int topple=0;
 	
+	boolean _triggered = false; // Any change in the pile activates the updatePile process
+	
 	
 	
 	
@@ -38,12 +40,16 @@ public class PileInNode {
 		
 		_grains.add(grain);
 		_countgrains++;
+		_triggered =  true;
+		
 	}
 	
 	public Grain pull(){
 		Grain g = _grains.get(_grains.size());
 		_grains.remove(_grains.size());		
 		_countgrains--;
+		
+		_triggered = true;
 		
 		return g;
 	}
@@ -61,6 +67,7 @@ public class PileInNode {
 		
 		_grains.remove(0);	
 		
+		_triggered = true;
 		
 		return g;
 	}
@@ -70,6 +77,8 @@ public class PileInNode {
 	}
 	
 	public void tic(){
+		_triggered=false;
+		
 		if (_transfer.size()>0){
 			for (int i=0;i<_transfer.size();i++){
 				_transfer.get(i).decrease_transferring_time();
@@ -85,6 +94,7 @@ public class PileInNode {
 	}
 	
 	public void tac(){
+
 		if (_grains.size()>0 || _proc_time>0){ // If there are grains in the pile or a process to process, otherwise it waits
 			while (_proc_time/(_speedup*1.0)<1.0 && _grains.size()>0){
 				_proc_time+=fifoget().get_runtime();
@@ -118,9 +128,12 @@ public class PileInNode {
 			g.set_transferring(true,this,to);
 			to.transfer(g);
 		}		
+		
+		_triggered = true;
 	}
 	
 	public void transfer(Grain g){
+		_triggered=true;
 		double transferringtime = (g.get_codesize()*1.0)/Configuration.C[g._from._indexpile][g._to._indexpile];
 		g.set_transferring_time(transferringtime);
 		_transfer.add(g);
@@ -131,12 +144,17 @@ public class PileInNode {
 		return _countgrains;
 	}
 	
+	public int size_transfer(){
+		return _countgrains+_transfer.size();
+	}
+	
 		
 	public boolean isempty(){
 		return (_transfer.size() > 0 || _grains.size() > 0)?false:true; 
 	}
 	
 	protected void abort_transfer(Grain g){
+		_triggered=true;
 		
 		g._to._transfer.remove(g._to._transfer.indexOf(g));
 		g.resetvaluesingrain();
