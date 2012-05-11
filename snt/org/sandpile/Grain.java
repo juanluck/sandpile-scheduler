@@ -15,6 +15,7 @@ public class Grain{
 	private long _identifier;
 	private boolean _transferring=false;
 	protected PileInNode _from,_to;
+	private int _flowtime=0;
 	
 	public Grain() {
 		_identifier = CommonState.r.nextLong();
@@ -56,6 +57,9 @@ public class Grain{
 		_transferring_time--;
 	}
 
+	public void increase_flowtime(){
+		_flowtime++;
+	}
 
 	public double get_runtime() {
 		return _runtime;
@@ -74,7 +78,9 @@ public class Grain{
 		_transferring_time = 0;
 	}
 
-	
+	public int get_flowtime(){
+		return _flowtime;
+	}
 	
 	public boolean equals(Object obj) {
 		if (((Grain)obj)._identifier== this._identifier)

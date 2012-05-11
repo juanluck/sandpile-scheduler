@@ -82,7 +82,8 @@ public class Configuration {
 	//It disables the sandpile when is set to false; default is true
 	public static boolean sandpile=true;
 	
-	//It identifies the experiment with the following values: exper+"_"+seed+"_"+
+	//It identifies the experiment with the following values: architecture/workload/initialization/seed
+	public static String workload;
 	public static String exper;
 	
 	public static void setConfiguration(LoadProperties lp){
@@ -120,6 +121,7 @@ public class Configuration {
 		fileworkloadN = "b_"+Configuration.b+"_tpbot_"+Configuration.tasksperbotmethod+"_"+Configuration.tasksperbot+"_N_"+Configuration.methodruntime+"_"+Configuration.runtimeavg;
 		fileworkloadA = "b_"+Configuration.b+"_tpbot_"+Configuration.tasksperbotmethod+"_"+Configuration.tasksperbot+"_A_"+Configuration.methodarrival+"_"+Configuration.arrivalavg;
 		fileworkloadD = "b_"+Configuration.b+"_tpbot_"+Configuration.tasksperbotmethod+"_"+Configuration.tasksperbot+"_D_"+Configuration.methodcodesize+"_"+Configuration.codesizeavg;
+		workload = "b_"+Configuration.b+"_tpbot_"+Configuration.tasksperbotmethod+"_"+Configuration.tasksperbot+"_N_"+Configuration.methodruntime+"_"+Configuration.runtimeavg+"_A_"+Configuration.methodarrival+"_"+Configuration.arrivalavg+"_D_"+Configuration.methodcodesize+"_"+Configuration.codesizeavg;
 		
 		if (Configuration.parsing && Configuration.b!=0){
 			setupworkload();
@@ -136,6 +138,9 @@ public class Configuration {
 		
 		//Activate sandpile
 		sandpile= Boolean.valueOf(lp.getProperty("sandpile", "true"));
+		
+		//Exper
+		exper=fileprocessors+filenetwork+"/"+workload+"/"+assignation;
 		
 		
 	}

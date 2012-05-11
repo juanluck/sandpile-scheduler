@@ -1,6 +1,8 @@
 package org.factories;
 
 
+import java.io.File;
+
 import org.Sandpile;
 import org.config.Configuration;
 import org.graphs.WattsStrogatz;
@@ -15,6 +17,11 @@ public class factoryExperiment {
 		
 		//Setting the seed
 		CommonState.setSeed(Configuration.seed);
+		
+		//Creating the directory for the experiment
+		Configuration.exper += "/"+Configuration.seed;
+		
+		(new File(Configuration.exper)).mkdirs();
 		
 		//List of Nodes
 		Node[] proc = new Node[Configuration.q];

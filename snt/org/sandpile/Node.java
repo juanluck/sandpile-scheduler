@@ -56,7 +56,7 @@ public class Node {
 				for(int i=0; i<selectedneighbours.size();i++){
 					int neighboursgrains = selectedneighbours.get(i)._pile.size_transfer();
 					selectedneighbours.get(i).routingRequest(_pile, _pile.get_indexpile(), avggrains-neighboursgrains, mingrains);
-					System.out.println("GRANOS:"+(avggrains-neighboursgrains));
+					//System.out.println("GRANOS:"+(avggrains-neighboursgrains));
 				}
 					
 			}else{
@@ -81,7 +81,8 @@ public class Node {
 			if (virtualgrains <= minimumnumberofgrains){ // In case that the number of grains to root is smaller (or equal) to the pre-established minimum
 				for(int i=0;i<virtualgrains;i++)
 					origin.graintopple(_pile);
-				System.out.println("Consumo en 1: "+virtualgrains);
+				if(virtualgrains>0)
+					origin.addgrainsintransaction(virtualgrains);
 			}else{
 				int localgrains= _pile.size_transfer();
 				int vlocalgrains= localgrains+virtualgrains;
@@ -91,7 +92,8 @@ public class Node {
 				if(selectedneighbours.size()==0){ // In case that all selectedneighbors already belong to the avalanche
 					for(int i=0;i<virtualgrains;i++)
 						origin.graintopple(_pile);
-					System.out.println("Consumo en 2: "+virtualgrains);
+					if(virtualgrains>0)
+						origin.addgrainsintransaction(virtualgrains);
 				}else{
 					int grainsneighbours=0;
 					for(int i=0; i<selectedneighbours.size();i++){
@@ -106,7 +108,8 @@ public class Node {
 							for(int i=0;i<grainsforlocal;i++){ // We compute in the current node those grains that correspond to him
 								origin.graintopple(_pile);
 							}
-							System.out.println("Consumo en 3: "+grainsforlocal);
+							if(grainsforlocal>0)
+								origin.addgrainsintransaction(grainsforlocal);
 						}else{
 							System.err.println("ESTO NO DEBERIA DE DARSE");
 						}
@@ -131,7 +134,7 @@ public class Node {
 								selectedneighbours.get(i).selected=false;
 							}
 						}
-						System.out.println("Envio: "+enviados);
+						//System.out.println("Envio: "+enviados);
 						
 						
 						
@@ -142,7 +145,8 @@ public class Node {
 						for(int i=0;i<virtualgrains;i++){ // We compute all virtualgrains in the current node
 							origin.graintopple(_pile);
 						}
-						System.out.println("Consumo en 4: "+virtualgrains);
+						if(virtualgrains>0)
+							origin.addgrainsintransaction(virtualgrains);
 					}
 				}	
 			}

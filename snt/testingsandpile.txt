@@ -1,0 +1,1 @@
+java -cp "$CLASSPATH:../snt/lib/*" org.Experiment b=1000 tasksperbotmethod=fixed tasksperbot=32 methodruntime=homogeneous runtimeavg=5 methodcodesize=homogeneous codesizeavg=0 methodarrival=testingsandpile arrivalavg=0 parsing=true fileprocessors=homogeneousQ32 filenetwork=homogeneousC32 q=32 assignation=frontend rewiring=0.2

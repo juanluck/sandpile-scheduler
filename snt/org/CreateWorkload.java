@@ -5,6 +5,8 @@ import org.config.Logger;
 
 
 public class CreateWorkload {
+	static int testarrival=0; //for the testing sandpile method
+	static int testarrivaltime=0;
 	
 	public static void main(String[] args) {
 		LoadProperties lp = new LoadProperties(args);
@@ -53,6 +55,12 @@ public class CreateWorkload {
 	public static String arrival(){
 		if (Configuration.methodarrival.equals("homogeneous")){
 			return Configuration.arrivalavg+"";
+		}else if (Configuration.methodarrival.equals("testingsandpile")){
+			int aux= testarrivaltime;
+			if ((testarrival%Configuration.tasksperbot)==0)
+				testarrivaltime++;
+			testarrival++;
+			return aux+"";
 		}else
 			return "";
 	}

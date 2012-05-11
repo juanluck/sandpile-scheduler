@@ -12,16 +12,25 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.config.Configuration;
+import org.config.OrderedTasks;
 
 public class PileInNode {
 	private List<Grain> _grains;
 	private List<Grain> _transfer;
+	private List<Grain> _processed;
 	private int _countgrains=0;
 	private double _proc_time=0;
 	private double _speedup;
 	private int _indexpile;
+	private boolean _proc_empty=true;
+	
 	
 	private int topple=0;
+	private int toppletransaction=0;
+	private SortedMap<Integer, Integer> _frectopple;
+	
+	private int _abort=0;
+	private int _proc_tasks=0;
 	
 	boolean _triggered = false; // Any change in the pile activates the updatePile process
 	
@@ -34,14 +43,17 @@ public class PileInNode {
 		_speedup = speedup;
 		_grains = new ArrayList<Grain>();
 		_transfer = new ArrayList<Grain>();
+		_processed = new ArrayList<Grain>();
+		_frectopple = new TreeMap<Integer, Integer>();
+		
+		
 	}
 	
 	public void push(Grain grain){
 		
 		_grains.add(grain);
 		_countgrains++;
-		_triggered =  true;
-		
+		_triggered =  true;		
 	}
 	
 	public Grain pull(){
@@ -76,6 +88,7 @@ public class PileInNode {
 		_grains.remove(_grains.indexOf(g));
 	}
 	
+	//TIC for network transactions
 	public void tic(){
 		_triggered=false;
 		
@@ -93,16 +106,37 @@ public class PileInNode {
 		}
 	}
 	
-	public void tac(){
+	// TAC for processors
+	//It returns the number of processed tasks to compute the throughput
+	public int tac(){
 
+		int processedtask=0;
 		if (_grains.size()>0 || _proc_time>0){ // If there are grains in the pile or a process to process, otherwise it waits
 			while (_proc_time/(_speedup*1.0)<1.0 && _grains.size()>0){
-				_proc_time+=fifoget().get_runtime();
+				Grain g = fifoget();
+				processedtask++;
+				_proc_time+=g.get_runtime();
+				_processed.add(g);
 			}
 			_proc_time-=_speedup;
+			
+			for(int i=0;i<_grains.size();i++){
+				_grains.get(i).increase_flowtime();
+			}
+			
 			if(_proc_time<0)
 				_proc_time=0;
+			if (_proc_time>0){
+				_proc_empty=false;
+			}else
+				_proc_empty=true;
 		}
+		
+		return processedtask;
+	}
+	
+	public void addgrainsintransaction(int numbergrains){
+		toppletransaction+=numbergrains;
 	}
 	
 	public void graintopple(PileInNode to){
@@ -150,12 +184,12 @@ public class PileInNode {
 	
 		
 	public boolean isempty(){
-		return (_transfer.size() > 0 || _grains.size() > 0)?false:true; 
+		return (_transfer.size() > 0 || _grains.size() > 0 || !_proc_empty)?false:true; 
 	}
 	
 	protected void abort_transfer(Grain g){
 		_triggered=true;
-		
+		_abort++;
 		g._to._transfer.remove(g._to._transfer.indexOf(g));
 		g.resetvaluesingrain();
 	}
@@ -169,7 +203,59 @@ public class PileInNode {
 	public int get_topple() {
 		return topple;
 	}
+	
+	public int get_topple_transaction() {
+		int aux = toppletransaction;
+		toppletransaction = 0;
+		return aux;
+	}
+	
+	public void add_frectopple(int value){
+		
 
+		
+		if (_frectopple.containsKey(new Integer(value))){
+			int frec = _frectopple.get(new Integer(value)).intValue();
+			frec++;
+			_frectopple.put(new Integer(value), new Integer(frec));
+		
+		}else{
+			_frectopple.put(new Integer(value), new Integer(1));
+		}
+
+		//print_topple_frequencies();
+		
+	}
+	
+	
+  public void print_topple_frequencies(){
+		
+		Integer key;
+		String frequencies="";
+		Iterator<Integer> it = _frectopple.keySet().iterator();
+		System.out.println("<-------Pile "+_indexpile);
+		while(it.hasNext()){
+			key=it.next();
+			System.out.println(key.toString()+" "+_frectopple.get(key).toString());
+		}
+		System.out.println("------->");
+
+	}
+	
+	public SortedMap<Integer, Integer> get_freqtopple(){
+		return _frectopple;
+	}
+	
+	public int get_abort(){
+		return _abort;
+	}
+
+	public List<Grain> get_processed(){
+		return _processed;
+	}
+
+	
+	
 	public static void main(String[] args) {
 		
 		Configuration.C = new double[2][2];
