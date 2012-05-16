@@ -19,8 +19,11 @@ public class Sandpile extends Thread{
 	
 	SortedMap<Integer, Integer> frec;
 	
+	SortedMap<Integer, Integer> _throughput;
+	
 	public Sandpile() {
 		frec = new TreeMap<Integer, Integer>();
+		_throughput = new TreeMap<Integer, Integer>();
 	}
 	
 	public void setSn(WattsStrogatz sn) {
@@ -104,6 +107,15 @@ public class Sandpile extends Thread{
 					emptypile=false;
 			}
 			
+			if (_throughput.containsKey(new Integer(throughput))){
+				int aux = _throughput.get(new Integer(throughput)).intValue();
+				aux++;
+				_throughput.remove(new Integer(throughput));
+				_throughput.put(new Integer(throughput), new Integer(aux));
+			}else{
+				_throughput.put(new Integer(throughput), new Integer(1));
+			}
+			
 			//System.out.println("Clock: "+clock+" Topple: "+totaltopple);
 			clock++;
 			
@@ -128,10 +140,12 @@ public class Sandpile extends Thread{
 			}
 		}
 		
+
+		
 		logs(clock,throughput);
 		
 		finallog(clock);
-		
+		Logger.append("", ""+clock+" "+get_total_topples(frec)+"\n");		
 		
 	}
 	
@@ -186,9 +200,10 @@ public class Sandpile extends Thread{
 		Logger.append(Configuration.exper+"/statuspiles.txt", pile);
 		Logger.append(Configuration.exper+"/statustransfer.txt", transfer);
 		Logger.append(Configuration.exper+"/statustotal.txt", total);
-		Logger.append(Configuration.exper+"/topplecycle.txt", topple);
+		if (topplecycle>0)
+			Logger.append(Configuration.exper+"/topplecycle.txt", topple);
 		Logger.append(Configuration.exper+"/abort.txt", abort);
-		Logger.append(Configuration.exper+"/stats.txt", stats);
+		Logger.append(Configuration.exper+"/dynamics.txt", stats);
 		
 		//------------End Logs
 		
@@ -230,8 +245,75 @@ public class Sandpile extends Thread{
 		
 		String flowtime = avgflow+" "+stdflow+"\n";
 		
-		Logger.append(Configuration.exper+"/flowtime.txt", flowtime);
+		Logger.append(Configuration.exper+"/stats.txt", "Flowtime "+flowtime+get_throughput_avg_std(clock)+"Makespan "+clock+"\n");
 		
+		Logger.append(Configuration.exper+"/throughput.txt", get_throughput_frequencies(clock));
+		
+		
+	}
+	
+	public String get_throughput_avg_std(int clock){
+		Integer key;
+		Iterator<Integer> it = _throughput.keySet().iterator();
+		
+		double avgthroughput=0;
+		int count=0;
+		
+		while(it.hasNext()){
+			key=it.next();
+			int times = _throughput.get(key).intValue();
+			count += times;
+			avgthroughput += (key.intValue() * times);
+		}
+		avgthroughput /= (count*1.0);
+		
+		
+		it = _throughput.keySet().iterator();
+		double stdthroughput=0;
+		double std = 0;
+		count=0;
+		
+		while(it.hasNext()){
+			key=it.next();
+			int times = _throughput.get(key).intValue();
+			std = avgthroughput - key.intValue();
+			std *= std;
+			count += times;
+			stdthroughput += (std * times);
+		}
+		
+		stdthroughput /= (count*1.0); stdthroughput = Math.sqrt(stdthroughput);
+		
+		return "Throughput "+avgthroughput+" "+stdthroughput+"\n";
+	}
+	
+	public String get_throughput_frequencies(int clock){
+		Integer key;
+		String frequencies="";
+		Iterator<Integer> it = _throughput.keySet().iterator();
+		
+		int keyvalue = 0;
+		double freqvalue = 0;
+
+		while(it.hasNext()){
+			key=it.next();
+			keyvalue = key.intValue();
+			freqvalue=_throughput.get(key).intValue()/(clock*1.0);
+			frequencies+=keyvalue+" "+freqvalue+"\n";
+		}
+		return frequencies;
+	}
+	
+	public int get_total_topples(SortedMap<Integer, Integer> frectopple){
+		Integer key;
+		Iterator<Integer> it = frectopple.keySet().iterator();
+		
+		int totaltopples = 0;
+		while(it.hasNext()){
+			key=it.next();
+			totaltopples += (key.intValue() * frectopple.get(key).intValue());
+		}
+		return totaltopples;
 	}
 	
 	public String get_topple_frequencies(SortedMap<Integer, Integer> frectopple){
@@ -240,14 +322,15 @@ public class Sandpile extends Thread{
 		String frequencies="";
 		Iterator<Integer> it = frectopple.keySet().iterator();
 		
-		boolean newcount=true;
-		int keyvalue = 0;
-		int freqvalue = 0;
-		boolean last=false;
+		//boolean newcount=true;
+		//int keyvalue = 0;
+		//int freqvalue = 0;
+		//boolean last=false;
 		while(it.hasNext()){
 			key=it.next();
 			if(key.intValue()!=0){
-				if(newcount){
+				frequencies+=key.intValue()+" "+frectopple.get(key).intValue()+"\n";
+				/*if(newcount){
 					newcount=false;
 					keyvalue=key.intValue();
 					freqvalue=frectopple.get(key).intValue();
@@ -257,12 +340,12 @@ public class Sandpile extends Thread{
 					frequencies+=keyvalue+" "+freqvalue+"\n";
 					keyvalue=key.intValue();
 					freqvalue=frectopple.get(key).intValue();
-				}
+				}*/
 				
 				//frequencies+=key.toString()+" "+frectopple.get(key).toString()+"\n";
 			}
 		}
-		frequencies+=keyvalue+" "+freqvalue+"\n";
+		//frequencies+=keyvalue+" "+freqvalue+"\n";
 		return frequencies;
 	}
 }

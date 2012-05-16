@@ -5,7 +5,7 @@ import org.config.Logger;
 
 
 public class CreateWorkload {
-	static int testarrival=0; //for the testing sandpile method
+	static int testarrival=1; //for the testing sandpile method
 	static int testarrivaltime=0;
 	
 	public static void main(String[] args) {
@@ -58,7 +58,7 @@ public class CreateWorkload {
 		}else if (Configuration.methodarrival.equals("testingsandpile")){
 			int aux= testarrivaltime;
 			if ((testarrival%Configuration.tasksperbot)==0)
-				testarrivaltime++;
+				testarrivaltime+=Configuration.arrivalavg;
 			testarrival++;
 			return aux+"";
 		}else

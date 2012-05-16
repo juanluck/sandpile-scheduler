@@ -51,6 +51,8 @@ public class Node {
 																			 // in the example above (1000 task) the worst-case would lead to 6 lookups, while without a limit would suppose ~126 lookups
 				if (mingrains<1)
 					mingrains=1;
+				
+				mingrains=1;
 			
 				
 				for(int i=0; i<selectedneighbours.size();i++){
