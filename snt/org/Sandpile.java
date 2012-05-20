@@ -123,7 +123,7 @@ public class Sandpile extends Thread{
 			tasks = Configuration.V.tasksarriving(clock);
 			
 			//Assigning task to processors. You can follow three different policies: "frontend", "random" and "roundrobin"
-			proc=0;
+			//proc=0;
 			while(tasks!=null && tasks.size()>0){
 				Map<String,Double> task= tasks.remove(0);
 				Double runtime  = task.get("runtime");
@@ -145,7 +145,7 @@ public class Sandpile extends Thread{
 		logs(clock,throughput);
 		
 		finallog(clock);
-		Logger.append("", ""+clock+" "+get_total_topples(frec)+"\n");		
+		Logger.append("", get_flowtime_avg_std()+" "+get_throughput_avg_std(clock)+" "+clock+" "+get_total_topples(frec)+"\n");		
 		
 	}
 	
@@ -217,6 +217,16 @@ public class Sandpile extends Thread{
 		}
 		Logger.append(Configuration.exper+"/topplefrequencies.txt", get_topple_frequencies(frec));
 		
+		
+		
+		Logger.append(Configuration.exper+"/stats.txt", get_flowtime_avg_std()+"\n"+get_throughput_avg_std(clock)+"\n"+"Makespan "+clock+"\n");
+		
+		Logger.append(Configuration.exper+"/throughput.txt", get_throughput_frequencies(clock));
+		
+		
+	}
+	
+	public String get_flowtime_avg_std(){
 		double avgflow=0;
 		int countgrains=0;
 		for(int i=0;i<sn.size();i++){
@@ -243,14 +253,11 @@ public class Sandpile extends Thread{
 		
 		stdflow/=(countgrains*1.0); stdflow = Math.sqrt(stdflow);
 		
-		String flowtime = avgflow+" "+stdflow+"\n";
+		String flowtime = avgflow+" "+stdflow;
 		
-		Logger.append(Configuration.exper+"/stats.txt", "Flowtime "+flowtime+get_throughput_avg_std(clock)+"Makespan "+clock+"\n");
-		
-		Logger.append(Configuration.exper+"/throughput.txt", get_throughput_frequencies(clock));
-		
-		
+		return "Flowtime "+flowtime;		
 	}
+	
 	
 	public String get_throughput_avg_std(int clock){
 		Integer key;
@@ -284,7 +291,7 @@ public class Sandpile extends Thread{
 		
 		stdthroughput /= (count*1.0); stdthroughput = Math.sqrt(stdthroughput);
 		
-		return "Throughput "+avgthroughput+" "+stdthroughput+"\n";
+		return "Throughput "+avgthroughput+" "+stdthroughput;
 	}
 	
 	public String get_throughput_frequencies(int clock){

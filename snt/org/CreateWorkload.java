@@ -3,6 +3,8 @@ import org.config.Configuration;
 import org.config.LoadProperties;
 import org.config.Logger;
 
+import random.CommonState;
+
 
 public class CreateWorkload {
 	static int testarrival=1; //for the testing sandpile method
@@ -41,6 +43,13 @@ public class CreateWorkload {
 	public static String runtime(){
 		if (Configuration.methodruntime.equals("homogeneous")){
 			return Configuration.runtimeavg+"";
+		}else if (Configuration.methodruntime.equals("normal")){
+			double val=0;
+			do{
+				val = CommonState.r.nextGaussian()*Math.sqrt(Configuration.runtimeavg/3.0)+Configuration.runtimeavg;
+			}while(val<=0);
+			
+			return val+"";
 		}else
 			return "";
 	}
@@ -48,6 +57,13 @@ public class CreateWorkload {
 	public static String codesize(){
 		if (Configuration.methodcodesize.equals("homogeneous")){
 			return Configuration.codesizeavg+"";
+		}else if(Configuration.methodcodesize.equals("normal")){
+			double val=0;
+			do{
+				val = CommonState.r.nextGaussian()*Math.sqrt(Configuration.codesizeavg/3.0)+Configuration.codesizeavg;
+			}while(val<=0);
+			
+			return val+"";
 		}else
 			return "";
 	}
@@ -59,6 +75,12 @@ public class CreateWorkload {
 			int aux= testarrivaltime;
 			if ((testarrival%Configuration.tasksperbot)==0)
 				testarrivaltime+=Configuration.arrivalavg;
+			testarrival++;
+			return aux+"";
+		}else if (Configuration.methodarrival.equals("uniform")){
+			int aux= testarrivaltime;
+			if ((testarrival%Configuration.tasksperbot)==0)
+				testarrivaltime = CommonState.r.nextInt(Configuration.arrivalavg);
 			testarrival++;
 			return aux+"";
 		}else
