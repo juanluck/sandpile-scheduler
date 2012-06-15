@@ -1,0 +1,1 @@
+java -cp "$CLASSPATH:../snt/lib/*" org.PrintWorkload b=100 tasksperbotmethod=fixed tasksperbot=2048 methodruntime=normal runtimeavg=15 methodcodesize=normal codesizeavg=6 methodarrival=uniform arrivalavg=200 parsing=true fileprocessors=increasingQ2048 filenetwork=increasingC2048 q=2048 assignation=random rewiring=0.2 sandpile=false

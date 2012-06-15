@@ -183,6 +183,22 @@ public class Sandpile extends Thread{
 			abortcycle+=aborttransaction;
 		}
 		
+		double avgloadcycle=0;
+	
+		for(int i=0;i<sn.size();i++){
+			avgloadcycle+=sn.getProcessor(i).get_pile().size_transfer();
+		}
+		
+		avgloadcycle/=sn.size();
+
+		double stdloadcycle=0;
+		for(int i=0;i<sn.size();i++){
+			double std = avgloadcycle - sn.getProcessor(i).get_pile().size_transfer();
+			std *= std;
+			stdloadcycle += std;
+		}
+
+		stdloadcycle/=(sn.size()*1.0); stdloadcycle = Math.sqrt(stdloadcycle);
 		
 		
 		String pile=clock+"";
@@ -204,6 +220,7 @@ public class Sandpile extends Thread{
 			Logger.append(Configuration.exper+"/topplecycle.txt", topple);
 		Logger.append(Configuration.exper+"/abort.txt", abort);
 		Logger.append(Configuration.exper+"/dynamics.txt", stats);
+		Logger.append(Configuration.exper+"/workload.txt", clock+" "+avgloadcycle+" "+stdloadcycle);
 		
 		//------------End Logs
 		
