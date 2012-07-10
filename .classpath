@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="snt"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="snt/lib/random.jar"/>
+	<classpathentry kind="lib" path="/home/juanlu/projects/sandpile-scheduler/snt/lib/fang2120420.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
