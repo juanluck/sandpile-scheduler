@@ -83,6 +83,16 @@ public class CreateWorkload {
 				testarrivaltime = CommonState.r.nextInt(Configuration.arrivalavg);
 			testarrival++;
 			return aux+"";
+		}else if(Configuration.methodarrival.equals("increasing")){
+			int aux= testarrivaltime;
+			if (testarrival> Configuration.tasksperbot){
+				aux += CommonState.r.nextInt(Configuration.arrivalavg);
+				if ((testarrival%Configuration.tasksperbot)==0)
+					testarrivaltime += Configuration.arrivalavg;
+			}
+				
+			testarrival++;
+			return aux+"";
 		}else
 			return "";
 	}

@@ -22,6 +22,8 @@ public class PrintWorkload {
 			}
 			if (ntask!=0)
 				System.out.println(clock+" "+ntask);
+			else
+				System.out.println(clock+" "+0);
 		}
 		
 		

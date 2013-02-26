@@ -24,7 +24,16 @@ public class PileInNode {
 	private int _indexpile;
 	private boolean _proc_empty=true;
 	
+	private int _localtime=0;
+	private double _task_per_cycle_estimate = 1;
 	
+	
+	public double get_task_per_cycle_estimate() {
+		return _task_per_cycle_estimate;
+	}
+
+
+
 	private int topple=0;
 	private int toppletransaction=0;
 	private SortedMap<Integer, Integer> _frectopple;
@@ -118,6 +127,11 @@ public class PileInNode {
 				_proc_time+=g.get_runtime();
 				_processed.add(g);
 			}
+			
+			_localtime ++;
+			_task_per_cycle_estimate = _processed.size()/(_localtime*1.0);
+ 
+			
 			_proc_time-=_speedup;
 			
 			for(int i=0;i<_grains.size();i++){

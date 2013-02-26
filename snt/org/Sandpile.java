@@ -88,9 +88,13 @@ public class Sandpile extends Thread{
 			//System.out.println();
 			//System.out.println("-----------------------------------------");
 			
-			
-			if (Configuration.sandpile) // If is false, there is no sandpile
-				for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdate();	}
+			if (Configuration.liquid)
+				for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdateLiquid();	}
+			else if (Configuration.sandpile) // If is false, there is no sandpile
+				if (Configuration.clairvoyance)
+					for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdateClairvoyant();	}
+				else
+					for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdate();}
 				//sn.getProcessor(sn.size()/2).executeUpdate();
 			
 			//Tic transfer n bits/time from source to destiny. After completeness, task are pushed in the pile.
@@ -207,10 +211,12 @@ public class Sandpile extends Thread{
 		String topple=clock+" "+topplecycle;
 		String abort=clock+" "+abortcycle;
 		String stats=clock+" "+totaltopple+" "+throughput;
+		String estimate=clock+"";
 		for(int i=0;i<sn.size();i++){
 			pile+=" "+sn.getProcessor(i).get_pile().size();
 			transfer+=" "+(sn.getProcessor(i).get_pile().size_transfer()-sn.getProcessor(i).get_pile().size());
-			total+=" "+sn.getProcessor(i).get_pile().size_transfer();
+			total+=" "+(int)(sn.getProcessor(i).get_pile().size_transfer());///sn.getProcessor(i).get_pile().get_task_per_cycle_estimate());
+			estimate+=" "+sn.getProcessor(i).get_pile().get_task_per_cycle_estimate();
 		}
 		
 		Logger.append(Configuration.exper+"/statuspiles.txt", pile);
@@ -221,6 +227,7 @@ public class Sandpile extends Thread{
 		Logger.append(Configuration.exper+"/abort.txt", abort);
 		Logger.append(Configuration.exper+"/dynamics.txt", stats);
 		Logger.append(Configuration.exper+"/workload.txt", clock+" "+avgloadcycle+" "+stdloadcycle);
+		Logger.append(Configuration.exper+"/TperCest.txt", estimate);
 		
 		//------------End Logs
 		

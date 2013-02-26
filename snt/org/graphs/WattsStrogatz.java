@@ -19,29 +19,59 @@ public class WattsStrogatz{
 		
 		int simetric_degree =4;// Node degree is k=4
 		
-		//Building a regular ring
-		for(int i=0;i<Configuration.q;i++)
-			for (int j=0;j<simetric_degree;j++){
-				_graph[i][(i+(j+1))%Configuration.q] = true;
-				_graph[i][((i-(j+1))%Configuration.q > -1) ? (i-(j+1))%Configuration.q : Configuration.q+((i-(j+1))%Configuration.q)] = true;
-			}
-		
-		
-		//Rewiring
-		for(int i=0;i<Configuration.q;i++){
-			for(int j=0;j<i;j++){
-				if(_graph[i][j] && CommonState.r.nextDouble()<Configuration.rewiring){ //We initialize with a watts strogatz graph
-					int node = CommonState.r.nextInt(Configuration.q);
-					while(_graph[i][node] || node==i){
-						node = (node+1)%Configuration.q; 
+
+		if(Configuration.topology.equals("ring")){
+			//Building a regular ring NON toroidal
+			for(int i=0;i<Configuration.q;i++)
+				for (int j=0;j<simetric_degree;j++){
+					if (i+(j+1)<Configuration.q)
+						_graph[i][i+(j+1)] = true;
+					if(i-(j+1)>-1)
+						_graph[i][i-(j+1)] = true;
+				}			
+		}else{//WS
+			//Building a regular ring TOROIDAL
+			for(int i=0;i<Configuration.q;i++)
+				for (int j=0;j<simetric_degree;j++){
+					_graph[i][(i+(j+1))%Configuration.q] = true;
+					_graph[i][((i-(j+1))%Configuration.q > -1) ? (i-(j+1))%Configuration.q : Configuration.q+((i-(j+1))%Configuration.q)] = true;
+				}
+			//Rewiring
+			for(int i=0;i<Configuration.q;i++){
+				for(int j=0;j<i;j++){
+					if(_graph[i][j] && CommonState.r.nextDouble()<Configuration.rewiring){ //We initialize with a watts strogatz graph
+						int node = CommonState.r.nextInt(Configuration.q);
+						while(_graph[i][node] || node==i){
+							node = (node+1)%Configuration.q; 
+						}
+						_graph[i][j] = false;
+						_graph[j][i] = false;
+						_graph[i][node] =true;
+						_graph[node][i] = true;
 					}
-					_graph[i][j] = false;
-					_graph[j][i] = false;
-					_graph[i][node] =true;
-					_graph[node][i] = true;
 				}
 			}
+			
 		}
+			
+			
+		
+		//To paint the connection matrix
+//		System.out.println();
+//		for(int i=0;i<Configuration.q;i++){
+//			for(int j=0;j<Configuration.q;j++){
+//				if (i==j){
+//					System.out.print(" -");
+//				}else if (_graph[i][j]){
+//					System.out.print(" X");
+//				}else
+//					System.out.print(" 0");
+//			}
+//			System.out.println();
+//		}
+		
+		
+		
 	}
 	
 	
@@ -53,6 +83,8 @@ public class WattsStrogatz{
 			if(_graph[index][i])
 				nn.add(_proc[i]);
 		}
+		
+		//System.err.println(nn.size());
 		return nn;
 	}
 	

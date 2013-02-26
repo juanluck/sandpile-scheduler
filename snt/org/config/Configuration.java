@@ -71,6 +71,8 @@ public class Configuration {
 	//-------------------------
 	public static long seed;
 	
+	//Topology: By the moment only "ring" and "wattsstrogatz" is implemented
+	public static String topology;
 	//Rewiring probability for the Watts-Strogatz graph
 	//-------------------------
 	public static double rewiring;
@@ -82,9 +84,25 @@ public class Configuration {
 	//It disables the sandpile when is set to false; default is true
 	public static boolean sandpile=true;
 	
+	//It implements a simplistic version of the liquid approach when is set to true; default is false
+	public static boolean liquid=false;
+	
+	//It selects the type of transition policy that enables an avalanche to happen
+	//order: it selects the two neighbors beta with less load
+	//random: it selects randomly the two neighbors beta
+	public static String transition;
+	
 	//It identifies the experiment with the following values: architecture/workload/initialization/seed
 	public static String workload;
 	public static String exper;
+	
+	//Clairvoyance
+	public static boolean clairvoyance;
+	
+	//Gossip forwarding
+	public static boolean forwarding=true;
+	
+
 	
 	public static void setConfiguration(LoadProperties lp){
 
@@ -130,6 +148,8 @@ public class Configuration {
 		// Seed
 		seed = (lp.getProperty("seed") == null) ? System.currentTimeMillis() : Long.valueOf(lp.getProperty("seed")).longValue();
 		
+		//Topology
+		topology = lp.getProperty("topology", "wattsstrogatz");
 		//WS rewiring
 		rewiring= Double.valueOf(lp.getProperty("rewiring","0.1"));
 		
@@ -138,10 +158,41 @@ public class Configuration {
 		
 		//Activate sandpile
 		sandpile= Boolean.valueOf(lp.getProperty("sandpile", "true"));
+
+		
+		//To Activate liquid
+		liquid= Boolean.valueOf(lp.getProperty("liquid", "false"));
+
+		//Select transition policy: order or random
+		transition = lp.getProperty("transition", "order");
+		
+		//Activate clairvoyance
+		clairvoyance= Boolean.valueOf(lp.getProperty("clairvoyance", "false"));
+		
+		//Activate forwarding
+		forwarding= Boolean.valueOf(lp.getProperty("forwarding", "true"));
+
 		
 		//Exper
 		exper=fileprocessors+filenetwork+"/"+workload+"/"+assignation;
 		
+		if (liquid)
+			exper+="LIQ";
+		else if (sandpile)
+			exper+="SP";
+		
+		exper+=topology;
+		
+		if (clairvoyance)
+			exper+="CL";
+		
+		if (!forwarding)
+			exper+="NOFWD";
+		
+		if (transition.equals("order"))
+			exper+="order";
+		else
+			exper+="random";
 		
 	}
 	
