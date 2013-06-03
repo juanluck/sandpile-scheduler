@@ -29,6 +29,31 @@ public class WattsStrogatz{
 					if(i-(j+1)>-1)
 						_graph[i][i-(j+1)] = true;
 				}			
+		}else if(Configuration.topology.equals("vonneumann")){//Grid lattice
+			//Building a toroidal grid implementing a von Neumann neighborhood
+			//WARNING: In the current implementation we only considered a squared topology lxl, 
+			//therefore, Configuration.q should be the square of a number l.
+			
+			//TODO: To allow different topologies lxh, new configuration lines should define either l and h in config.Configuration
+			int l = (int)Math.sqrt(Configuration.q);
+			int h = l;
+			
+			for(int i=0;i<Configuration.q;i++){
+				if (i%l!=0)
+					_graph[i][i-1] = true;
+				if (i%l!=l-1)
+					_graph[i][i+1] = true;
+				if (i>=l)
+					_graph[i][i-l] = true;
+				if (i < l*(h-1))
+					_graph[i][i+l] = true;
+					
+				//_graph[i][  (i%l==0)     ?  i+l-1    : i-1  ] = true; //left
+				//_graph[i][ (i%l==l-1)    ?  i-l+1    : i+1  ] = true; //right
+				//_graph[i][   (i < l)     ? i+l*(h-1) : i-l  ] = true; //up
+				//_graph[i][ (i >= l*(h-1)) ? i-l*(h-1) : i+l  ] = true; //down
+				}
+			
 		}else{//WS
 			//Building a regular ring TOROIDAL
 			for(int i=0;i<Configuration.q;i++)
@@ -36,6 +61,11 @@ public class WattsStrogatz{
 					_graph[i][(i+(j+1))%Configuration.q] = true;
 					_graph[i][((i-(j+1))%Configuration.q > -1) ? (i-(j+1))%Configuration.q : Configuration.q+((i-(j+1))%Configuration.q)] = true;
 				}
+			
+			// A hack for setting a random topology if topology=random
+			if (Configuration.topology.equals("random")) 
+				Configuration.rewiring = 1;
+			
 			//Rewiring
 			for(int i=0;i<Configuration.q;i++){
 				for(int j=0;j<i;j++){
