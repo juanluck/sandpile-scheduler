@@ -84,6 +84,44 @@ public class Node {
 	
 	}
 	
+	public void executevonneumannUpdate(){
+		if (_pile._triggered){
+			selected = true;// To avoid cycles in the recursive call
+			int localgrains = _pile.size();
+			
+			if(localgrains >= Configuration.threshold){
+				
+				ArrayList<Node> selectedneighbours = new ArrayList<Node>();
+				for(int i = 0; i < 4; i++){
+					if(!_neighbours.get(i).selected){
+						_neighbours.get(i).selected = true;
+						selectedneighbours.add(_neighbours.get(i));
+					}
+				}
+				
+				for(int i = 0; i < selectedneighbours.size(); i++){
+					selectedneighbours.get(i).routingClassicRequest(_pile, _pile.get_indexpile(), Configuration.migrating_tasks_to_neighbor, 1);
+				}
+
+				for(int i = 0; i < selectedneighbours.size(); i++){
+					_neighbours.get(i).get_pile().tic(); // Hack for getting a classic-abelian sandpile: communications are instantaneous	
+				}
+
+				for(int i = 0; i < selectedneighbours.size(); i++){
+					_neighbours.get(i).executevonneumannUpdate();					
+				}
+				
+			}
+			
+			
+			selected = false;			
+		}else{
+			//System.err.println("Nothing to do");
+		}
+	
+	}
+
+	
 	public void executeUpdateClairvoyant(){
 		if (_pile._triggered){
 			selected = true;// To avoid cycles in the recursive call
@@ -366,7 +404,16 @@ public class Node {
 
 	
 	
+	public void routingClassicRequest(PileInNode origin, int sender, int virtualgrains, int minimumnumberofgrains){
 	
+		if (virtualgrains > 0){
+				for(int i=0;i<virtualgrains;i++)
+					origin.graintopple(_pile);
+				if(virtualgrains>0)
+					origin.addgrainsintransaction(virtualgrains);
+		}
+	}
+
 	
 	public void routingRequest(PileInNode origin, int sender, int virtualgrains, int minimumnumberofgrains){
 		selected = true;
@@ -636,6 +683,7 @@ public class Node {
 		
 		selected = false;
 	}
+	
 	
 	private ArrayList<Node> selectTwoRandomNeighbours(){
 

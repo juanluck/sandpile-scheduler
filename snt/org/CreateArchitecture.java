@@ -18,9 +18,9 @@ public class CreateArchitecture {
 		// + PROCESSORS
 		// --+ HOMOGENEOUS: Creating an Architecture of Q homogeneous processors
 		if(Configuration.processortype.equals("homogeneous")){
-			String cpu="5";
+			String cpu="1";
 			for (int i=0;i<Configuration.q-1;i++)
-					cpu+=" 5";
+					cpu+=" 1";
 			Logger.append("homogeneousQ"+Configuration.q, cpu+"\n");
 
 		}

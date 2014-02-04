@@ -29,12 +29,12 @@ public class WattsStrogatz{
 					if(i-(j+1)>-1)
 						_graph[i][i-(j+1)] = true;
 				}			
-		}else if(Configuration.topology.equals("vonneumann")){//Grid lattice
+		}else if(Configuration.topology.equals("gridtorus")){
 			//Building a toroidal grid implementing a von Neumann neighborhood
 			//WARNING: In the current implementation we only considered a squared topology lxl, 
 			//therefore, Configuration.q should be the square of a number l.
 			
-			//TODO: To allow different topologies lxh, new configuration lines should define either l and h in config.Configuration
+			//TODO: To allow different topologies lxh, the settings should define either l and h in config.Configuration
 			int l = (int)Math.sqrt(Configuration.q);
 			int h = l;
 			

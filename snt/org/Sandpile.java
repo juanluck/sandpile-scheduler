@@ -91,7 +91,10 @@ public class Sandpile extends Thread{
 			if (Configuration.liquid)
 				for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdateLiquid();	}
 			else if (Configuration.sandpile) // If is false, there is no sandpile
-				if (Configuration.clairvoyance)
+				if (Configuration.topology.equals("grid") || Configuration.topology.equals("gridtorus")){
+					if (Configuration.neighborhood.equals("vonneumann"))
+						for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executevonneumannUpdate();	}
+				}else if (Configuration.clairvoyance)
 					for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdateClairvoyant();	}
 				else
 					for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdate();}

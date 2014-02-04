@@ -72,6 +72,7 @@ public class Configuration {
 	public static long seed;
 	
 	//Topology: By the moment only "ring" and "wattsstrogatz" is implemented
+	//TODO: implement grid and gridtorus topology 
 	public static String topology;
 	//Rewiring probability for the Watts-Strogatz graph
 	//-------------------------
@@ -101,6 +102,15 @@ public class Configuration {
 	
 	//Gossip forwarding
 	public static boolean forwarding=true;
+	
+	// Classic sandpile (this settings are activated for grid/gridtorus topologies)
+	//The following variables must be set if you want a classical grid/threshold sandpile
+	// neighborhood stands for the neighborhood configuration only for grid or gridtorus topologies
+	// TODO: implement vonneumann and moore neighborhoods.
+		public static String neighborhood="vonneumann";
+	//e.g. if neighborhood=vonneumann, threshold=8 and migrating_tasks_to_neighbor=1 then a pile of 8 grains will topple 4 grains to N W S E
+		public static int threshold;
+		public static int migrating_tasks_to_neighbor;
 	
 
 	
@@ -194,6 +204,10 @@ public class Configuration {
 		else
 			exper+="random";
 		
+		//Classic sandpile
+		neighborhood=lp.getProperty("neighborhood", "vonneumann");
+		threshold = Integer.parseInt(lp.getProperty("threshold", "8"));
+		migrating_tasks_to_neighbor = Integer.parseInt(lp.getProperty("migratingtasksperneighbor", "1"));;
 	}
 	
 	private static void setupworkload(){

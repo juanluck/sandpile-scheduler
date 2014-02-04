@@ -50,6 +50,15 @@ public class CreateWorkload {
 			}while(val<=0);
 			
 			return val+"";
+		}else if (Configuration.methodruntime.equals("exponential")){
+			double val=0;
+			do{
+				double U = CommonState.r.nextDouble();
+				double lambda = 1.0/Configuration.runtimeavg;
+				val = (-Math.log(U))/lambda;
+			}while(val<=0);
+			
+			return val+"";
 		}else
 			return "";
 	}
