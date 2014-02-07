@@ -8,7 +8,7 @@ import org.config.Logger;
 public class CreateArchitecture {
 	
 	public static void main(String[] args) {
-		LoadProperties lp = new LoadProperties(args);
+		LoadProperties lp = new LoadProperties(args,null);
 		Configuration.setConfiguration(lp);
 			
 		double [] p = new double[Configuration.q];

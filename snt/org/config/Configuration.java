@@ -71,8 +71,8 @@ public class Configuration {
 	//-------------------------
 	public static long seed;
 	
-	//Topology: By the moment only "ring" and "wattsstrogatz" is implemented
-	//TODO: implement grid and gridtorus topology 
+	//Topology: By the moment only "ring", "gridtorus" and "wattsstrogatz" are implemented
+	//TODO: implement grid topology 
 	public static String topology;
 	//Rewiring probability for the Watts-Strogatz graph
 	//-------------------------

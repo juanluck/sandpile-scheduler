@@ -29,7 +29,7 @@ public class WattsStrogatz{
 					if(i-(j+1)>-1)
 						_graph[i][i-(j+1)] = true;
 				}			
-		}else if(Configuration.topology.equals("gridtorus")){
+		}else if(Configuration.topology.equals("grid")){
 			//Building a toroidal grid implementing a von Neumann neighborhood
 			//WARNING: In the current implementation we only considered a squared topology lxl, 
 			//therefore, Configuration.q should be the square of a number l.

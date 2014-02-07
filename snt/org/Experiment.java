@@ -7,7 +7,7 @@ import org.factories.factoryExperiment;
 public class Experiment{
 
 	public static void main(String[] args) {
-		LoadProperties lp = new LoadProperties(args);
+		LoadProperties lp = new LoadProperties(args,null);
 		Configuration.setConfiguration(lp);
 		
 		factoryExperiment.createExperiment().run();

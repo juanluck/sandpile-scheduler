@@ -1,6 +1,7 @@
 package org.sandpile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedMap;
@@ -15,8 +16,8 @@ public class Node {
 	ArrayList<Node> _neighbours;
 	PileInNode _pile;
 	boolean selected = false;
+	private HashMap<Integer, Node> _recursivequeue = new HashMap<>();
 	
-
 	
 	
 	public Node(PileInNode pile) {
@@ -84,19 +85,39 @@ public class Node {
 	
 	}
 	
-	public void executevonneumannUpdate(){
-		if (_pile._triggered){
-			selected = true;// To avoid cycles in the recursive call
+	private void push_recursive_queue (Node node){
+		if (!_recursivequeue.containsKey(new Integer (node.get_pile().get_indexpile()))){
+			_recursivequeue.put(new Integer (node.get_pile().get_indexpile()), node);
+		}
+	}
+	
+	private void update_from_recursive_queue(Node origin){
+		while(!_recursivequeue.isEmpty()){
+			ArrayList<Integer> list = new ArrayList<>();
+			for (Iterator<Integer> keys = _recursivequeue.keySet().iterator(); keys.hasNext();){list.add(keys.next());}
+			
+			for(int i=0;i<list.size();i++){
+				Node toupdate = _recursivequeue.get(list.get(i));
+				_recursivequeue.remove(new Integer(list.get(i)));
+				toupdate.executevonneumannUpdate(origin, false);
+			}
+		}
+
+	}
+	
+	
+	public void executevonneumannUpdate(Node origin, boolean first){
+			//selected = true;// To avoid cycles in the recursive call
 			int localgrains = _pile.size();
 			
 			if(localgrains >= Configuration.threshold){
 				
 				ArrayList<Node> selectedneighbours = new ArrayList<Node>();
-				for(int i = 0; i < 4; i++){
-					if(!_neighbours.get(i).selected){
-						_neighbours.get(i).selected = true;
+				for(int i = 0; i < _neighbours.size(); i++){
+					//if(!_neighbours.get(i).selected){
+						//_neighbours.get(i).selected = true;
 						selectedneighbours.add(_neighbours.get(i));
-					}
+					//}
 				}
 				
 				for(int i = 0; i < selectedneighbours.size(); i++){
@@ -108,17 +129,16 @@ public class Node {
 				}
 
 				for(int i = 0; i < selectedneighbours.size(); i++){
-					_neighbours.get(i).executevonneumannUpdate();					
+					origin.push_recursive_queue(_neighbours.get(i));					
 				}
-				
+
 			}
-			
-			
-			selected = false;			
-		}else{
-			//System.err.println("Nothing to do");
-		}
-	
+
+			if(this.get_pile().get_indexpile() == origin.get_pile().get_indexpile() && first){
+				update_from_recursive_queue(origin);
+			}
+				
+			//selected = false;	
 	}
 
 	
@@ -403,6 +423,7 @@ public class Node {
 	}
 
 	
+
 	
 	public void routingClassicRequest(PileInNode origin, int sender, int virtualgrains, int minimumnumberofgrains){
 	
@@ -412,6 +433,7 @@ public class Node {
 				if(virtualgrains>0)
 					origin.addgrainsintransaction(virtualgrains);
 		}
+		
 	}
 
 	

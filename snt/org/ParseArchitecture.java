@@ -6,7 +6,7 @@ import org.config.LoadProperties;
 public class ParseArchitecture {
 
 	public static void main(String[] args) {
-		LoadProperties lp = new LoadProperties(args);
+		LoadProperties lp = new LoadProperties(args,null);
 		Configuration.setConfiguration(lp);
 		
 		

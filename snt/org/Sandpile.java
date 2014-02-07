@@ -93,7 +93,7 @@ public class Sandpile extends Thread{
 			else if (Configuration.sandpile) // If is false, there is no sandpile
 				if (Configuration.topology.equals("grid") || Configuration.topology.equals("gridtorus")){
 					if (Configuration.neighborhood.equals("vonneumann"))
-						for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executevonneumannUpdate();	}
+						for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executevonneumannUpdate(sn.getProcessor(i),true);	}
 				}else if (Configuration.clairvoyance)
 					for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdateClairvoyant();	}
 				else
@@ -136,7 +136,7 @@ public class Sandpile extends Thread{
 				Double runtime  = task.get("runtime");
 				Double codesize = task.get("codesize");
 				Grain g = new Grain(runtime.doubleValue(),codesize.doubleValue());
-				int middle=sn.size()/2;
+				int middle=(int)(0.9 + sn.size()/2.0);
 				if(Configuration.assignation.equals("random"))
 					sn.getProcessor(CommonState.r.nextInt(sn.size())).get_pile().push(g); // Random
 				else if(Configuration.assignation.equals("frontend"))
