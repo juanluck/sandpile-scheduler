@@ -58,6 +58,9 @@ public class Sandpile extends Thread{
 				sn.getProcessor(++proc%sn.size()).get_pile().push(g); // Round-robin
 			
 		}
+
+		//Initial paint
+		repaint();
 		
 		while (!Configuration.V.isempty() || !emptypile){
 			
@@ -105,6 +108,9 @@ public class Sandpile extends Thread{
 				sn.getProcessor(i).get_pile().tic();
 			}
 
+			// After tic()
+			repaint();
+			
 			//Tac consumes tasks from the pile in a fifo style
 			emptypile=true;
 			throughput=0;
@@ -113,6 +119,10 @@ public class Sandpile extends Thread{
 				if(!sn.getProcessor(i).get_pile().isempty()) // For termination
 					emptypile=false;
 			}
+			
+			// After tac()
+			repaint();
+			
 			
 			if (_throughput.containsKey(new Integer(throughput))){
 				int aux = _throughput.get(new Integer(throughput)).intValue();
@@ -148,12 +158,27 @@ public class Sandpile extends Thread{
 		}
 		
 
-		
 		logs(clock,throughput);
 		
 		finallog(clock);
 		Logger.append("", get_flowtime_avg_std()+" "+get_throughput_avg_std(clock)+" "+clock+" "+get_total_topples(frec)+"\n");		
 		
+	}
+	
+	private void repaint(){
+		if (Configuration.display){
+			for(int i = 0;i<sn.size();i++){
+				double load = (Configuration.threshold < sn.getProcessor(i).get_pile().size())? Configuration.threshold : sn.getProcessor(i).get_pile().size();
+				if (sn.getProcessor(i).get_pile().isempty()){
+					WattsStrogatz.get_gs().getGSnodeById(""+sn.getProcessor(i).get_pile().get_indexpile()).addAttribute("ui.hide");
+				}else{
+					WattsStrogatz.get_gs().getGSnodeById(""+sn.getProcessor(i).get_pile().get_indexpile()).removeAttribute("ui.hide");
+					WattsStrogatz.get_gs().changeGSColorByLoad(""+sn.getProcessor(i).get_pile().get_indexpile(), load/(Configuration.threshold*1.0) );
+				}
+				
+			}		
+			WattsStrogatz.get_gs().sleep(Configuration.pause);
+		}	
 	}
 	
 	public void add_topple_frequencies(SortedMap<Integer, Integer> localfreq){

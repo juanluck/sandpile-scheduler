@@ -111,6 +111,11 @@ public class Configuration {
 	//e.g. if neighborhood=vonneumann, threshold=8 and migrating_tasks_to_neighbor=1 then a pile of 8 grains will topple 4 grains to N W S E
 		public static int threshold;
 		public static int migrating_tasks_to_neighbor;
+		
+		
+	//Displaying with GraphStream
+		public static boolean display=true;
+		public static int pause=100;
 	
 
 	
@@ -208,6 +213,12 @@ public class Configuration {
 		neighborhood=lp.getProperty("neighborhood", "vonneumann");
 		threshold = Integer.parseInt(lp.getProperty("threshold", "8"));
 		migrating_tasks_to_neighbor = Integer.parseInt(lp.getProperty("migratingtasksperneighbor", "1"));;
+		
+		//Display in Graphstream
+		display = Boolean.parseBoolean(lp.getProperty("display","false"));
+		pause = Integer.parseInt(lp.getProperty("pause","100"));
+		
+		
 	}
 	
 	private static void setupworkload(){

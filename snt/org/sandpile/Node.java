@@ -8,6 +8,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.config.Configuration;
+import org.graphs.WattsStrogatz;
 
 import random.CommonState;
 
@@ -100,6 +101,7 @@ public class Node {
 				Node toupdate = _recursivequeue.get(list.get(i));
 				_recursivequeue.remove(new Integer(list.get(i)));
 				toupdate.executevonneumannUpdate(origin, false);
+
 			}
 		}
 
@@ -131,7 +133,7 @@ public class Node {
 				for(int i = 0; i < selectedneighbours.size(); i++){
 					origin.push_recursive_queue(_neighbours.get(i));					
 				}
-
+				
 			}
 
 			if(this.get_pile().get_indexpile() == origin.get_pile().get_indexpile() && first){

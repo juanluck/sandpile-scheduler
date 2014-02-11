@@ -4,6 +4,7 @@ package org.graphs;
 import java.util.ArrayList;
 
 import org.config.Configuration;
+import org.graphics.GraphStreamWrapper;
 import org.sandpile.Node;
 
 import random.CommonState;
@@ -11,8 +12,11 @@ import random.CommonState;
 public class WattsStrogatz{
 	private Node[] _proc;
 	private boolean[][] _graph;
+	private static GraphStreamWrapper _gs;
 	
-	
+
+
+
 	public WattsStrogatz(Node[] nodes){
 		_proc = nodes;
 		_graph = new boolean[Configuration.q][Configuration.q];
@@ -81,11 +85,12 @@ public class WattsStrogatz{
 					}
 				}
 			}
-			
 		}
 			
 			
-		
+		if (Configuration.display){
+			initialgraph();
+		}
 		//To paint the connection matrix
 //		System.out.println();
 //		for(int i=0;i<Configuration.q;i++){
@@ -110,13 +115,16 @@ public class WattsStrogatz{
 		ArrayList<Node> nn = new ArrayList<Node>();
 		
 		for(int i=0;i<Configuration.q;i++){
-			if(_graph[index][i])
+			if(_graph[index][i]){
 				nn.add(_proc[i]);
+			}
 		}
 		
 		//System.err.println(nn.size());
 		return nn;
 	}
+	
+	
 	
 	public Node getProcessor(int index) {
 		return _proc[index];
@@ -134,5 +142,47 @@ public class WattsStrogatz{
 	public int size(){
 		return _proc.length;
 	}
+	
+	/*-------------------------------------------------------
+	 * 
+	 *               Displaying the graph
+	 * 
+	 * ------------------------------------------------------*/
+	
+	 private void initialgraph(){
+		 _gs = new GraphStreamWrapper();
+		 
+		 // Vertices
+		 if(Configuration.topology.equals("grid")){
+			 int l = (int)Math.sqrt(Configuration.q);
+				for(int i=0;i<Configuration.q;i++){
+	   				_gs.addGSnode(""+i, (int)(i/l), i%l);
+	   				//_gs.getGSnodeById(""+i).addAttribute("ui.hide");
+				}
+		 }//TODO: paint other types of topologies... ring, sw,...
+		 
+		 // Edges
+//		 for(int i=0;i<Configuration.q;i++){
+//			 for(int j=i;j<Configuration.q;j++){
+//				 if (_graph[i][j])
+//					 _gs.addGSedge(i+"_"+j, i, j);
+//			 }
+//		 }
+	        sleep(Configuration.pause);		 
+
+	 }
+	 
+	 private void sleep(int i) {
+	        try {
+	            Thread.sleep(i);
+	        } catch (InterruptedException e) {
+	            e.printStackTrace();
+	        }
+	 }
+
 		
+	public static GraphStreamWrapper get_gs() {
+			return _gs;
+		}
+
 }
