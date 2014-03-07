@@ -50,24 +50,34 @@ public class LoadProperties extends Properties{
 		
 		if( pars == null || pars.length == 0 ) return;
 		
-		try
-		{
-			load( pars[0] );
-			System.err.println(
-				"ConfigProperties: File "+pars[0]+" loaded.");
-			pars[0] = "";
+		for(int i=0;i<pars.length;i++){
+			
+			try
+			{
+				load( pars[i] );
+				System.err.println(
+					"ConfigProperties: File "+pars[i]+" loaded.");
+				pars[i] = "";
+			}
+			catch( IOException e )
+			{
+				System.err.println("ConfigProperties: Failed loading '"+pars[i]
+				+"' as a file, interpreting it as a property.");
+			}
+			catch( Exception e )
+			{
+				System.err.println("ConfigProperties: " + e );
+			}
 		}
-		catch( IOException e )
-		{
-			System.err.println("ConfigProperties: Failed loading '"+pars[0]
-			+"' as a file, interpreting it as a property.");
+		
+		boolean somethingtoread =false;
+		for(int i=0;i<pars.length;i++){
+			if( pars[i].length()!=0) {
+				somethingtoread =true;
+				break;
+			}
 		}
-		catch( Exception e )
-		{
-			System.err.println("ConfigProperties: " + e );
-		}
-
-		if( pars.length==1 && pars[0].length()==0 ) return;
+		if(!somethingtoread) return;
 		
 		try
 		{
@@ -79,6 +89,7 @@ public class LoadProperties extends Properties{
 		{
 			System.err.println("ConfigProperties: " + e );
 		}
+		
 	}
 	
 

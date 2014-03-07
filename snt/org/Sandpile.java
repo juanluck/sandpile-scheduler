@@ -8,14 +8,14 @@ import java.util.TreeMap;
 
 import org.config.Configuration;
 import org.config.Logger;
-import org.graphs.WattsStrogatz;
+import org.graphs.Topology;
 import org.sandpile.Grain;
 
 import random.CommonState;
 
 public class Sandpile extends Thread{
 
-	WattsStrogatz sn;
+	Topology sn;
 	
 	SortedMap<Integer, Integer> frec;
 	
@@ -26,7 +26,7 @@ public class Sandpile extends Thread{
 		_throughput = new TreeMap<Integer, Integer>();
 	}
 	
-	public void setSn(WattsStrogatz sn) {
+	public void setSn(Topology sn) {
 		this.sn = sn;
 	}
 
@@ -95,8 +95,7 @@ public class Sandpile extends Thread{
 				for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdateLiquid();	}
 			else if (Configuration.sandpile) // If is false, there is no sandpile
 				if (Configuration.topology.equals("grid") || Configuration.topology.equals("gridtorus")){
-					if (Configuration.neighborhood.equals("vonneumann"))
-						for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executevonneumannUpdate(sn.getProcessor(i),true);	}
+						for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executegridUpdate(sn.getProcessor(i),true);	}
 				}else if (Configuration.clairvoyance)
 					for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdateClairvoyant();	}
 				else
@@ -170,14 +169,14 @@ public class Sandpile extends Thread{
 			for(int i = 0;i<sn.size();i++){
 				double load = (Configuration.threshold < sn.getProcessor(i).get_pile().size())? Configuration.threshold : sn.getProcessor(i).get_pile().size();
 				if (sn.getProcessor(i).get_pile().isempty()){
-					WattsStrogatz.get_gs().getGSnodeById(""+sn.getProcessor(i).get_pile().get_indexpile()).addAttribute("ui.hide");
+					Topology.get_gs().getGSnodeById(""+sn.getProcessor(i).get_pile().get_indexpile()).addAttribute("ui.hide");
 				}else{
-					WattsStrogatz.get_gs().getGSnodeById(""+sn.getProcessor(i).get_pile().get_indexpile()).removeAttribute("ui.hide");
-					WattsStrogatz.get_gs().changeGSColorByLoad(""+sn.getProcessor(i).get_pile().get_indexpile(), load/(Configuration.threshold*1.0) );
+					Topology.get_gs().getGSnodeById(""+sn.getProcessor(i).get_pile().get_indexpile()).removeAttribute("ui.hide");
+					Topology.get_gs().changeGSColorByLoad(""+sn.getProcessor(i).get_pile().get_indexpile(), load/(Configuration.threshold*1.0) );
 				}
 				
 			}		
-			WattsStrogatz.get_gs().sleep(Configuration.pause);
+			Topology.get_gs().sleep(Configuration.pause);
 		}	
 	}
 	

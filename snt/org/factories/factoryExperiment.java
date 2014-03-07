@@ -5,7 +5,7 @@ import java.io.File;
 
 import org.Sandpile;
 import org.config.Configuration;
-import org.graphs.WattsStrogatz;
+import org.graphs.Topology;
 import org.sandpile.Node;
 import org.sandpile.PileInNode;
 
@@ -31,7 +31,7 @@ public class factoryExperiment {
 		}
 		
 		//Creating the topology
-		WattsStrogatz sn = new WattsStrogatz(proc);
+		Topology sn = new Topology(proc);
 		
 		for (int i=0;i<Configuration.q;i++){
 			proc[i].set_neighbours(sn.getNeighborhoodforNode(i));

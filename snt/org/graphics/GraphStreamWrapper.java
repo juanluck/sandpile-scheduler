@@ -28,7 +28,7 @@ public class GraphStreamWrapper {
 	int size = 5; 
 	protected String stylesheet = 
 			"graph { fill-mode: none; padding: 40px;}" 
-					+ "node { size: 30px; shape: box; fill-mode: dyn-plain; fill-color: white, black;}"
+					+ "node { size: 10px; shape: box; fill-mode: dyn-plain; fill-color: white, black;}"
 					+ "edge { size : 1px; fill-color: grey;}";
 		
 	public GraphStreamWrapper() {

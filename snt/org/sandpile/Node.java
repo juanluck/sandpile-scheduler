@@ -8,7 +8,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.config.Configuration;
-import org.graphs.WattsStrogatz;
+import org.graphs.Topology;
 
 import random.CommonState;
 
@@ -100,7 +100,7 @@ public class Node {
 			for(int i=0;i<list.size();i++){
 				Node toupdate = _recursivequeue.get(list.get(i));
 				_recursivequeue.remove(new Integer(list.get(i)));
-				toupdate.executevonneumannUpdate(origin, false);
+				toupdate.executegridUpdate(origin, false);
 
 			}
 		}
@@ -108,7 +108,7 @@ public class Node {
 	}
 	
 	
-	public void executevonneumannUpdate(Node origin, boolean first){
+	public void executegridUpdate(Node origin, boolean first){
 			//selected = true;// To avoid cycles in the recursive call
 			int localgrains = _pile.size();
 			
