@@ -1,0 +1,9 @@
+b = 1
+tasksperbotmethod = fixed
+tasksperbot = 40
+methodruntime = homogeneous
+runtimeavg = 2
+methodcodesize = homogeneous
+codesizeavg = 0
+methodarrival = homogeneous
+arrivalavg = 0

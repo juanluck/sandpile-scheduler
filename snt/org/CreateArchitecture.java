@@ -14,6 +14,11 @@ public class CreateArchitecture {
 		double [] p = new double[Configuration.q];
 		double [][] c =new double[Configuration.q][Configuration.q];
 		
+		String fileProcessor="";
+		String fileNetwork="";
+		String cpus="";
+		String network="";
+		
 		
 		// + PROCESSORS
 		// --+ HOMOGENEOUS: Creating an Architecture of Q homogeneous processors
@@ -21,8 +26,10 @@ public class CreateArchitecture {
 			String cpu="1";
 			for (int i=0;i<Configuration.q-1;i++)
 					cpu+=" 1";
-			Logger.append("homogeneousQ"+Configuration.q, cpu+"\n");
-
+			
+//			Logger.append("homogeneousQ"+Configuration.q, cpu+"\n");
+			fileProcessor = "homogeneousQ"+Configuration.q;
+			cpus+=cpu+"\n";
 		}
 		// --+  HETEROGENEOUS. Creating an Architecture of Q heterogeneous computers
 		//   --+ METHOD INCREASING processors to max rho
@@ -35,7 +42,9 @@ public class CreateArchitecture {
 					value+=increasingfactor;
 					cpu+=" "+value;
 			}
-			Logger.append("increasingQ"+Configuration.q, cpu+"\n");
+//			Logger.append("increasingQ"+Configuration.q, cpu+"\n");
+			fileProcessor = "increasingQ"+Configuration.q;
+			cpus+=cpu+"\n";
 			
 		}
 		//   --+ METHOD RANDOM processors: U from 1 to rho
@@ -61,9 +70,13 @@ public class CreateArchitecture {
 							link+=" 1";	
 					}
 				}
-				Logger.append("homogeneousC"+Configuration.q, link);
+//				Logger.append("homogeneousC"+Configuration.q, link);
+				network+=link+"\n";
 			}
-			Logger.append("homogeneousC"+Configuration.q, "");
+//			Logger.append("homogeneousC"+Configuration.q, "");
+			network += "";
+			fileNetwork = "homogeneousC"+Configuration.q;
+
 		}
 		// --+ HETEROGENEOUS: Creating an Architecture of heterogeneous network links
 		//   --+ METHOD INCREASING links to max tau
@@ -106,15 +119,22 @@ public class CreateArchitecture {
 							link+=" "+net[i][j];;	
 					}
 				}
-				Logger.append("increasingC"+Configuration.q, link);
+//				Logger.append("increasingC"+Configuration.q, link);
+				network += link+"\n";
 			}
-			Logger.append("increasingC"+Configuration.q, "");
+//			Logger.append("increasingC"+Configuration.q, "");
+			network += "";
+			fileNetwork = "increasingC"+Configuration.q;
+
 		}
+		
+		
 		
 		//   --+ METHOD RANDOM links: U from 1 to tau
 		// TODO: Implement the increasing, random  and other methods
 
-		
+		Logger.append(fileProcessor, cpus);
+		Logger.append(fileNetwork, network);
 		
 	}
 }

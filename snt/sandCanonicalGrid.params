@@ -1,0 +1,23 @@
+parsing = true
+fileprocessors = homogeneousQ1681
+filenetwork = homogeneousC1681
+q = 1681
+processortype = homogeneous
+networktype = homogeneous
+
+b = 1
+tasksperbotmethod = fixed
+tasksperbot = 4000
+methodruntime = homogeneous
+methodcodesize = homogeneous
+codesizeavg = 0
+methodarrival = homogeneous
+arrivalavg = 0
+runtimeavg = 16
+
+assignation = frontend
+topology = grid
+sandpile = true
+neighborhood = vonneumann
+threshold = 4
+migratingtaskstoneighbor = 1

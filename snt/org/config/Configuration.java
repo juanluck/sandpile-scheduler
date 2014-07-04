@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 
+import org.CreateWorkload;
+
 
 
 
@@ -84,6 +86,8 @@ public class Configuration {
 	
 	//It disables the sandpile when is set to false; default is true
 	public static boolean sandpile=true;
+	//If true It disables a processor to pull a task for processing (Used for canonical sandpile)
+	public static boolean notac=false;
 	
 	//It implements a simplistic version of the liquid approach when is set to true; default is false
 	public static boolean liquid=false;
@@ -173,7 +177,7 @@ public class Configuration {
 		
 		//Activate sandpile
 		sandpile= Boolean.valueOf(lp.getProperty("sandpile", "true"));
-
+		notac= Boolean.valueOf(lp.getProperty("notac", "false"));
 		
 		//To Activate liquid
 		liquid= Boolean.valueOf(lp.getProperty("liquid", "false"));
@@ -221,29 +225,55 @@ public class Configuration {
 		
 	}
 	
-	private static void setupworkload(){
+	
+	private static void setupOnLineworkload(){
 		
-		// Parsing runtimes
-		N = parsefile(Configuration.fileworkloadN);
-			
-		// Parsing Arrival times
-		A = parsefile(Configuration.fileworkloadA);
-		
-		// Parsing Code Size
-		D = parsefile(Configuration.fileworkloadD);
+		Tasks[] NDA = CreateWorkload.createOnLineWorkload();
 		
 		V = new OrderedTasks();
 		
 		for(int k=0;k<Configuration.b;k++){
-			ArrayList<Double> n = N.get(k);
-			ArrayList<Double> a = A.get(k);
-			ArrayList<Double> d = D.get(k);
+			ArrayList<Double> n = NDA[0].get(k);
+			ArrayList<Double> a = NDA[1].get(k);
+			ArrayList<Double> d = NDA[2].get(k);
 			
 			for (int i=0;i<n.size();i++){
 				V.add(a.get(i), n.get(i), d.get(i));
 			}
 			
 		}
+	
+	}
+	
+	private static void setupworkload(){
+		
+		File f = new File(Configuration.fileworkloadN);
+		if(f.exists() && !f.isDirectory()) {
+			// Parsing runtimes
+			N = parsefile(Configuration.fileworkloadN);
+				
+			// Parsing Arrival times
+			A = parsefile(Configuration.fileworkloadA);
+			
+			// Parsing Code Size
+			D = parsefile(Configuration.fileworkloadD);
+			
+			V = new OrderedTasks();
+			
+			for(int k=0;k<Configuration.b;k++){
+				ArrayList<Double> n = N.get(k);
+				ArrayList<Double> a = A.get(k);
+				ArrayList<Double> d = D.get(k);
+				
+				for (int i=0;i<n.size();i++){
+					V.add(a.get(i), n.get(i), d.get(i));
+				}
+			}
+		}else{//That is in case the workload has not been yet setup in a file. If that is the case we create it on-line
+			setupOnLineworkload();
+		}
+		
+		
 	
 	}
 	

@@ -2,6 +2,7 @@ package org;
 import org.config.Configuration;
 import org.config.LoadProperties;
 import org.config.Logger;
+import org.config.Tasks;
 
 import random.CommonState;
 
@@ -38,6 +39,32 @@ public class CreateWorkload {
 			Logger.append("b_"+Configuration.b+"_tpbot_"+Configuration.tasksperbotmethod+"_"+Configuration.tasksperbot+"_A_"+Configuration.methodarrival+"_"+Configuration.arrivalavg, "");
 		}
 	
+	}
+	
+	public static Tasks[] createOnLineWorkload(){
+		
+		Tasks [] NDA = new Tasks[3];
+		NDA[0] = new Tasks(); // Runtime N
+		NDA[1] = new Tasks(); // Data D
+		NDA[2] = new Tasks(); // Arriving N
+		// + ONLINE WORKLOAD
+		// --+ FIXED: Creating a Workload where every BoT has Configuration.tasksperbot tasks
+		if(Configuration.tasksperbotmethod.equals("fixed")){
+			for(int i=0;i<Configuration.b;i++){
+		
+				NDA[0].add(i,Double.parseDouble(runtime()));
+				NDA[1].add(i,Double.parseDouble(codesize()));
+				NDA[2].add(i,Double.parseDouble(arrival()));
+				for (int j=1;j<Configuration.tasksperbot;j++){
+					NDA[0].add(i,Double.parseDouble(runtime()));
+					NDA[1].add(i,Double.parseDouble(codesize()));
+					NDA[2].add(i,Double.parseDouble(arrival()));
+				}
+
+			}
+		}
+		
+		return NDA;
 	}
 	
 	public static String runtime(){

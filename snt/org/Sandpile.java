@@ -1,5 +1,6 @@
 package org;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,8 @@ import org.config.Configuration;
 import org.config.Logger;
 import org.graphs.Topology;
 import org.sandpile.Grain;
+import org.sandpile.Node;
+import org.sandpile.PileInNode;
 
 import random.CommonState;
 
@@ -154,13 +157,32 @@ public class Sandpile extends Thread{
 					sn.getProcessor(++proc%sn.size()).get_pile().push(g); // Round-robin
 				
 			}
+			
+			
+			//Hack for getting a canonical behavior: [Only for canonical abelian sandpile (tac=false)] Check for determining if the system is stable
+			boolean stable = true;
+			if (Configuration.notac=true && (Configuration.topology.equals("grid") || Configuration.topology.equals("gridtorus"))){
+				for(int i = 0;i<sn.size();i++){	
+					if (sn.getProcessor(i).get_pile().size() >= Configuration.threshold){
+						stable = false;
+					}
+				}
+			}
+		   if(stable)
+				break;
 		}
 		
 
 		logs(clock,throughput);
 		
 		finallog(clock);
-		Logger.append("", get_flowtime_avg_std()+" "+get_throughput_avg_std(clock)+" "+clock+" "+get_total_topples(frec)+"\n");		
+		int numberofprocessors = 0;
+		for(int i=0;i<sn.size();i++){
+			if(!sn.getProcessor(i).get_pile().isempty())
+				numberofprocessors++;
+		}
+			
+		Logger.append("","Nr.task: "+Configuration.b*Configuration.tasksperbot+" Nr.nodes: "+numberofprocessors+" Density: "+(Configuration.b*Configuration.tasksperbot*1.0)/numberofprocessors+" "+ get_flowtime_avg_std()+" "+get_throughput_avg_std(clock)+" "+clock+" "+get_total_topples(frec)+"\n");		
 		
 	}
 	
@@ -255,7 +277,6 @@ public class Sandpile extends Thread{
 		Logger.append(Configuration.exper+"/dynamics.txt", stats);
 		Logger.append(Configuration.exper+"/workload.txt", clock+" "+avgloadcycle+" "+stdloadcycle);
 		Logger.append(Configuration.exper+"/TperCest.txt", estimate);
-		
 		//------------End Logs
 		
 	}
@@ -405,5 +426,35 @@ public class Sandpile extends Thread{
 		}
 		//frequencies+=keyvalue+" "+freqvalue+"\n";
 		return frequencies;
+	}
+	
+	public static void main(String[] args) {
+		//Setting the seed
+				CommonState.setSeed(Configuration.seed);
+				
+				//Creating the directory for the experiment
+				Configuration.exper += "/"+Configuration.seed;
+				
+				(new File(Configuration.exper)).mkdirs();
+				
+				//List of Nodes
+				Node[] proc = new Node[Configuration.q];
+				for (int i=0;i<Configuration.q;i++){
+					PileInNode pile = new PileInNode(Configuration.p[i], i);
+					proc[i] = new Node(pile);
+				}
+				
+				//Creating the topology
+				Topology sn = new Topology(proc);
+				
+				for (int i=0;i<Configuration.q;i++){
+					proc[i].set_neighbours(sn.getNeighborhoodforNode(i));
+				}
+				
+				// Creating the algorithm
+				Sandpile sp = new Sandpile();
+				
+				// Adding the WS topology to the Sandpile
+				sp.setSn(sn);
 	}
 }

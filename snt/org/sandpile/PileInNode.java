@@ -119,6 +119,9 @@ public class PileInNode {
 	//It returns the number of processed tasks to compute the throughput
 	public int tac(){
 
+		if (Configuration.notac)
+			return 0;
+		
 		int processedtask=0;
 		if (_grains.size()>0 || _proc_time>0){ // If there are grains in the pile or a process to process, otherwise it waits
 			while (_proc_time/(_speedup*1.0)<1.0 && _grains.size()>0){
