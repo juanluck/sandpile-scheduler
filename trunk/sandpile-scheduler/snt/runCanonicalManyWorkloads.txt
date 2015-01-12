@@ -1,0 +1,11 @@
+#!/bin/bash
+
+maxexp=1000
+exp=1
+
+while [ $exp -le $maxexp ]; do
+        echo $exp
+        java -cp "./lib/*:." org.Experiment canonicalSandCanonicalGrid.params tasksperbot=$exp >> modelfitting.txt
+
+	exp=$[ $exp + 1 ]
+done

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="snt"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="snt/lib/random.jar"/>
+	<classpathentry kind="lib" path="/home/juanlu/projects/sandpile-scheduler/snt/lib/fang2120420.jar"/>
+	<classpathentry kind="lib" path="/home/juanlu/projects/sandpile-scheduler/snt/lib/gs-algo-1.3-SNAPSHOT-last.jar"/>
+	<classpathentry kind="lib" path="/home/juanlu/projects/sandpile-scheduler/snt/lib/gs-core-1.3-SNAPSHOT-last.jar"/>
+	<classpathentry kind="lib" path="/home/juanlu/projects/sandpile-scheduler/snt/lib/gs-ui-1.3-SNAPSHOT-last.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
