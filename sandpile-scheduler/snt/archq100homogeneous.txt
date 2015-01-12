@@ -1,0 +1,4 @@
+q = 100
+processortype = homogeneous
+networktype = homogeneous
+

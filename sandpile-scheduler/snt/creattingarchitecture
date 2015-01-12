@@ -1,0 +1,1 @@
+java -cp "$CLASSPATH:../snt/lib/*" org.CreateArchitecture q=2048 processortype=increasing rho=10 networktype=increasing tau=10

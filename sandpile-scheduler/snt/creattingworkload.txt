@@ -1,0 +1,1 @@
+java -cp "$CLASSPATH:../snt/lib/*" org.CreateWorkload b=100 tasksperbotmethod=fixed tasksperbot=320 methodruntime=homogeneous runtimeavg=1 methodcodesize=homogeneous codesizeavg=0 methodarrival=testingsandpile arrivalavg=10
