@@ -18,7 +18,7 @@ public class Node {
 	PileInNode _pile;
 	boolean selected = false;
 	private HashMap<Integer, Node> _recursivequeue = new HashMap<>();
-	
+	public static int size_of_the_avalanche = 0;
 	
 	
 	public Node(PileInNode pile) {
@@ -107,14 +107,19 @@ public class Node {
 	}
 	
 	
-	public void executegridUpdate(Node origin, boolean first){
+	public int executegridUpdate(Node origin, boolean first){
 			//selected = true;// To avoid cycles in the recursive call
 			int localgrains = _pile.size();
 			
-			if(localgrains >= Configuration.threshold){
+			if(first){
+				origin.size_of_the_avalanche = 0;
+			}
+			
+			while(localgrains >= Configuration.threshold && origin.size_of_the_avalanche<Configuration.q){
 				
 				for(int i = 0; i < _neighbours.size(); i++){
 					_neighbours.get(i).routingClassicRequest(_pile, _pile.get_indexpile(), Configuration.migrating_tasks_to_neighbor, 1);
+					origin.size_of_the_avalanche += Configuration.migrating_tasks_to_neighbor;
 				}
 
 				for(int i = 0; i < _neighbours.size(); i++){
@@ -124,12 +129,15 @@ public class Node {
 				for(int i = 0; i < _neighbours.size(); i++){
 					origin.push_recursive_queue(_neighbours.get(i));					
 				}
-				
+				localgrains = _pile.size();
 			}
 
 			if(this.get_pile().get_indexpile() == origin.get_pile().get_indexpile() && first){
 				update_from_recursive_queue(origin);
+				return origin.size_of_the_avalanche;
 			}
+			
+			return 0;
 				
 			//selected = false;	
 	}

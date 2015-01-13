@@ -39,12 +39,16 @@ public class Sandpile extends Thread{
 
 		int clock=0;
 		int throughput=0;
-
+		int new_workload = 0;
+		
 		
 		boolean emptypile=false;
 		
 		List<Map<String, Double>> tasks = Configuration.V.tasksarriving(clock);
-		
+		if(tasks!=null)
+			new_workload = tasks.size();
+		else
+			new_workload = 0;
 		//Assigning task to processors. You can follow three different policies: "frontend", "random" and "roundrobin"
 		int proc=0;
 		while(tasks!=null && tasks.size()>0){
@@ -52,7 +56,7 @@ public class Sandpile extends Thread{
 			Double runtime  = task.get("runtime");
 			Double codesize = task.get("codesize");
 			Grain g = new Grain(runtime.doubleValue(),codesize.doubleValue());
-			int middle=(int)(0.9 + sn.size()/2.0);
+			int middle=(int)( sn.size()/2.0);
 			if(Configuration.assignation.equals("random"))
 				sn.getProcessor(CommonState.r.nextInt(sn.size())).get_pile().push(g); // Random
 			else if(Configuration.assignation.equals("frontend"))
@@ -65,10 +69,15 @@ public class Sandpile extends Thread{
 		//Initial paint
 		repaint();
 		
+		Logger.append("","Cycle,New Workload,Resources,Avalanche,Accumulated Energy\n");
+		
+		int size_of_the_avalanche = 0;
+		long accumulated_energy = 0;
+		
 		while (!Configuration.V.isempty() || !emptypile){
 			
 			// Log files
-			logs(clock,throughput);
+			//logs(clock,throughput);
 			
 			// Active resources
 			int nr_resources = 0;
@@ -76,10 +85,11 @@ public class Sandpile extends Thread{
 				if (!sn.getProcessor(i).get_pile().isempty())
 					nr_resources++;
 			}
+			accumulated_energy +=nr_resources;
 			
-			
-			Logger.append("", clock+" "+nr_resources+"\n");
-			
+			Logger.append("", clock+","+new_workload+","+nr_resources+","+size_of_the_avalanche+","+accumulated_energy+"\n");
+			size_of_the_avalanche = 0;
+			new_workload = 0;
 			/*int max=0;
 			int totaltopple=0;
 			for(int i = 0;i<sn.size();i++){
@@ -106,7 +116,7 @@ public class Sandpile extends Thread{
 				for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdateLiquid();	}
 			else if (Configuration.sandpile) // If is false, there is no sandpile
 				if (Configuration.topology.equals("grid") || Configuration.topology.equals("gridtorus")){
-						for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executegridUpdate(sn.getProcessor(i),true);	}
+						for(int i = 0;i<sn.size();i++){	size_of_the_avalanche += sn.getProcessor(i).executegridUpdate(sn.getProcessor(i),true);	}
 				}else if (Configuration.clairvoyance)
 					for(int i = 0;i<sn.size();i++){	sn.getProcessor(i).executeUpdateClairvoyant();	}
 				else
@@ -148,6 +158,10 @@ public class Sandpile extends Thread{
 			
 			
 			tasks = Configuration.V.tasksarriving(clock);
+			if(tasks!=null)
+				new_workload = tasks.size();
+			else
+				new_workload = 0;
 			
 			//Assigning task to processors. You can follow three different policies: "frontend", "random" and "roundrobin"
 			//proc=0;
@@ -156,7 +170,7 @@ public class Sandpile extends Thread{
 				Double runtime  = task.get("runtime");
 				Double codesize = task.get("codesize");
 				Grain g = new Grain(runtime.doubleValue(),codesize.doubleValue());
-				int middle=(int)(0.9 + sn.size()/2.0);
+				int middle=(int)( sn.size()/2.0);
 				if(Configuration.assignation.equals("random"))
 					sn.getProcessor(CommonState.r.nextInt(sn.size())).get_pile().push(g); // Random
 				else if(Configuration.assignation.equals("frontend"))
@@ -190,7 +204,7 @@ public class Sandpile extends Thread{
 				numberofprocessors++;
 		}
 			
-		Logger.append("","Nr.task: "+Configuration.b*Configuration.tasksperbot+" Nr.nodes: "+numberofprocessors+" Density: "+(Configuration.b*Configuration.tasksperbot*1.0)/numberofprocessors+" "+ get_flowtime_avg_std()+" "+get_throughput_avg_std(clock)+" "+clock+" "+get_total_topples(frec)+"\n");		
+		//Logger.append("","Nr.task: "+Configuration.b*Configuration.tasksperbot+" Nr.nodes: "+numberofprocessors+" Density: "+(Configuration.b*Configuration.tasksperbot*1.0)/numberofprocessors+" "+ get_flowtime_avg_std()+" "+get_throughput_avg_std(clock)+" "+clock+" "+get_total_topples(frec)+"\n");		
 		
 	}
 	
