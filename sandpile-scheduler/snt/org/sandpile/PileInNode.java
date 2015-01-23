@@ -18,6 +18,7 @@ public class PileInNode {
 	private List<Grain> _grains;
 	private List<Grain> _transfer;
 	private List<Grain> _processed;
+	private List<Grain> _processed_in_current_cycle;
 	private int _countgrains=0;
 	private double _proc_time=0;
 	private double _speedup;
@@ -53,6 +54,7 @@ public class PileInNode {
 		_grains = new ArrayList<Grain>();
 		_transfer = new ArrayList<Grain>();
 		_processed = new ArrayList<Grain>();
+		_processed_in_current_cycle = new ArrayList<Grain>();
 		_frectopple = new TreeMap<Integer, Integer>();
 		
 		
@@ -124,11 +126,13 @@ public class PileInNode {
 		
 		int processedtask=0;
 		if (_grains.size()>0 || _proc_time>0){ // If there are grains in the pile or a process to process, otherwise it waits
+			_processed_in_current_cycle.clear();
 			while (_proc_time/(_speedup*1.0)<1.0 && _grains.size()>0){
 				Grain g = fifoget();
 				processedtask++;
 				_proc_time+=g.get_runtime();
 				_processed.add(g);
+				_processed_in_current_cycle.add(g);
 			}
 			
 			_localtime ++;
@@ -213,6 +217,22 @@ public class PileInNode {
 	
 	public int get_indexpile(){
 		return _indexpile;
+	}
+	
+	//it returns -1 when no task has been fetched
+	public double get_flowtime_of_tasks_in_current_cycle(){
+		if (_processed_in_current_cycle.size() == 0)
+			return -1;
+		
+		Iterator<Grain> it = _processed_in_current_cycle.iterator();
+		double avgflow=0;
+		for(;it.hasNext();){
+			Grain g = it.next();
+			avgflow += g.get_flowtime();
+		}
+		
+		avgflow /= (_processed_in_current_cycle.size()*1.0);
+		return avgflow;
 	}
 	
 	

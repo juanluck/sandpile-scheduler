@@ -23,7 +23,7 @@ public class Sandpile extends Thread{
 	SortedMap<Integer, Integer> frec;
 	
 	SortedMap<Integer, Integer> _throughput;
-	
+		
 	public Sandpile() {
 		frec = new TreeMap<Integer, Integer>();
 		_throughput = new TreeMap<Integer, Integer>();
@@ -39,6 +39,7 @@ public class Sandpile extends Thread{
 
 		int clock=0;
 		int throughput=0;
+		double current_flow_time=0;
 		int new_workload = 0;
 		
 		
@@ -68,8 +69,9 @@ public class Sandpile extends Thread{
 
 		//Initial paint
 		repaint();
-		
-		Logger.append("","Cycle,New Workload,Resources,Avalanche,Accumulated Energy\n");
+		if(Configuration.verbosity>0){
+			Logger.append("","Cycle,New Workload,Resources,Utilization,Avalanche,Accumulated Energy,Current Flow Time\n");
+		}
 		
 		int size_of_the_avalanche = 0;
 		long accumulated_energy = 0;
@@ -77,19 +79,22 @@ public class Sandpile extends Thread{
 		while (!Configuration.V.isempty() || !emptypile){
 			
 			// Log files
-			//logs(clock,throughput);
+			logs(clock,throughput);
 			
-			// Active resources
-			int nr_resources = 0;
-			for(int i = 0;i<sn.size();i++){
-				if (!sn.getProcessor(i).get_pile().isempty())
-					nr_resources++;
+			// Log in the Standard output
+			if(Configuration.verbosity>0){
+				int nr_resources = 0;
+				for(int i = 0;i<sn.size();i++){
+					if (!sn.getProcessor(i).get_pile().isempty())
+						nr_resources++;
+				}
+				accumulated_energy +=nr_resources;
+				
+				Logger.append("", clock+","+new_workload+","+nr_resources+","+((nr_resources*1.0)/Configuration.q)+","+size_of_the_avalanche+","+accumulated_energy+","+current_flow_time+"\n");
+				size_of_the_avalanche = 0;
+				new_workload = 0;
+				
 			}
-			accumulated_energy +=nr_resources;
-			
-			Logger.append("", clock+","+new_workload+","+nr_resources+","+size_of_the_avalanche+","+accumulated_energy+"\n");
-			size_of_the_avalanche = 0;
-			new_workload = 0;
 			/*int max=0;
 			int totaltopple=0;
 			for(int i = 0;i<sn.size();i++){
@@ -134,11 +139,23 @@ public class Sandpile extends Thread{
 			//Tac consumes tasks from the pile in a fifo style
 			emptypile=true;
 			throughput=0;
+			current_flow_time = 0;
+			int nr_of_tasks = 0;
 			for(int i = 0;i<sn.size();i++){
 				throughput += sn.getProcessor(i).get_pile().tac();
+				double aux = sn.getProcessor(i).get_pile().get_flowtime_of_tasks_in_current_cycle();
+				if (aux != -1){
+					current_flow_time += aux;
+					nr_of_tasks ++;
+				}
 				if(!sn.getProcessor(i).get_pile().isempty()) // For termination
 					emptypile=false;
 			}
+			
+			if(nr_of_tasks != 0)
+				current_flow_time /= (nr_of_tasks*1.0);
+			else
+				current_flow_time = -1;
 			
 			// After tac()
 			repaint();
@@ -197,7 +214,8 @@ public class Sandpile extends Thread{
 
 		logs(clock,throughput);
 		
-		finallog(clock);
+		if(Configuration.verbosity > 1)
+			finallog(clock);
 		int numberofprocessors = 0;
 		for(int i=0;i<sn.size();i++){
 			if(!sn.getProcessor(i).get_pile().isempty())
@@ -249,58 +267,63 @@ public class Sandpile extends Thread{
 		int topplecycle=0;
 		int abortcycle=0;
 		int totaltopple=0;
+		int global_avalanche_per_cycle =0;
 		for(int i=0;i<sn.size();i++){
 			totaltopple+=sn.getProcessor(i).get_pile().get_topple();
-			int toppletransaction = sn.getProcessor(i).get_pile().get_topple_transaction();
+			global_avalanche_per_cycle += sn.getProcessor(i).get_pile().get_topple_transaction();
 			int aborttransaction =  sn.getProcessor(i).get_pile().get_abort();
-			sn.getProcessor(i).get_pile().add_frectopple(toppletransaction);
-			topplecycle+=toppletransaction;
+			topplecycle+=sn.getProcessor(i).get_pile().get_topple_transaction();
 			abortcycle+=aborttransaction;
 		}
+		sn.getProcessor(0).get_pile().add_frectopple(global_avalanche_per_cycle);
 		
-		double avgloadcycle=0;
+		if(Configuration.verbosity>2){
+			double avgloadcycle=0;
+			
+			for(int i=0;i<sn.size();i++){
+				avgloadcycle+=sn.getProcessor(i).get_pile().size_transfer();
+			}
+			
+			avgloadcycle/=sn.size();
+
+			double stdloadcycle=0;
+			for(int i=0;i<sn.size();i++){
+				double std = avgloadcycle - sn.getProcessor(i).get_pile().size_transfer();
+				std *= std;
+				stdloadcycle += std;
+			}
+
+			stdloadcycle/=(sn.size()*1.0); stdloadcycle = Math.sqrt(stdloadcycle);
+			
+			
+			String pile=clock+"";
+			String transfer=clock+"";
+			String total=clock+"";
+			String topple=clock+" "+topplecycle;
+			String abort=clock+" "+abortcycle;
+			String stats=clock+" "+totaltopple+" "+throughput;
+			String estimate=clock+"";
+			for(int i=0;i<sn.size();i++){
+				pile+=" "+sn.getProcessor(i).get_pile().size();
+				transfer+=" "+(sn.getProcessor(i).get_pile().size_transfer()-sn.getProcessor(i).get_pile().size());
+				total+=" "+(int)(sn.getProcessor(i).get_pile().size_transfer());///sn.getProcessor(i).get_pile().get_task_per_cycle_estimate());
+				estimate+=" "+sn.getProcessor(i).get_pile().get_task_per_cycle_estimate();
+			}
+			
+			Logger.append(Configuration.exper+"/statuspiles"+Configuration.seed+".txt", pile);
+			Logger.append(Configuration.exper+"/statustransfer"+Configuration.seed+".txt", transfer);
+			Logger.append(Configuration.exper+"/statustotal"+Configuration.seed+".txt", total);
+			if (topplecycle>0)
+				Logger.append(Configuration.exper+"/topplecycle"+Configuration.seed+".txt", topple);
+			Logger.append(Configuration.exper+"/abort"+Configuration.seed+".txt", abort);
+			Logger.append(Configuration.exper+"/dynamics"+Configuration.seed+".txt", stats);
+			Logger.append(Configuration.exper+"/workload"+Configuration.seed+".txt", clock+" "+avgloadcycle+" "+stdloadcycle);
+			Logger.append(Configuration.exper+"/TperCest"+Configuration.seed+".txt", estimate);
+			//------------End Logs
+			
+		}
+		
 	
-		for(int i=0;i<sn.size();i++){
-			avgloadcycle+=sn.getProcessor(i).get_pile().size_transfer();
-		}
-		
-		avgloadcycle/=sn.size();
-
-		double stdloadcycle=0;
-		for(int i=0;i<sn.size();i++){
-			double std = avgloadcycle - sn.getProcessor(i).get_pile().size_transfer();
-			std *= std;
-			stdloadcycle += std;
-		}
-
-		stdloadcycle/=(sn.size()*1.0); stdloadcycle = Math.sqrt(stdloadcycle);
-		
-		
-		String pile=clock+"";
-		String transfer=clock+"";
-		String total=clock+"";
-		String topple=clock+" "+topplecycle;
-		String abort=clock+" "+abortcycle;
-		String stats=clock+" "+totaltopple+" "+throughput;
-		String estimate=clock+"";
-		for(int i=0;i<sn.size();i++){
-			pile+=" "+sn.getProcessor(i).get_pile().size();
-			transfer+=" "+(sn.getProcessor(i).get_pile().size_transfer()-sn.getProcessor(i).get_pile().size());
-			total+=" "+(int)(sn.getProcessor(i).get_pile().size_transfer());///sn.getProcessor(i).get_pile().get_task_per_cycle_estimate());
-			estimate+=" "+sn.getProcessor(i).get_pile().get_task_per_cycle_estimate();
-		}
-		
-		Logger.append(Configuration.exper+"/statuspiles.txt", pile);
-		Logger.append(Configuration.exper+"/statustransfer.txt", transfer);
-		Logger.append(Configuration.exper+"/statustotal.txt", total);
-		if (topplecycle>0)
-			Logger.append(Configuration.exper+"/topplecycle.txt", topple);
-		Logger.append(Configuration.exper+"/abort.txt", abort);
-		Logger.append(Configuration.exper+"/dynamics.txt", stats);
-		Logger.append(Configuration.exper+"/workload.txt", clock+" "+avgloadcycle+" "+stdloadcycle);
-		Logger.append(Configuration.exper+"/TperCest.txt", estimate);
-		//------------End Logs
-		
 	}
 	
 	
@@ -309,13 +332,13 @@ public class Sandpile extends Thread{
 			SortedMap<Integer, Integer> localfreq =	sn.getProcessor(i).get_pile().get_freqtopple();
 			add_topple_frequencies(localfreq);
 		}
-		Logger.append(Configuration.exper+"/topplefrequencies.txt", get_topple_frequencies(frec));
+		Logger.append(Configuration.exper+"/topplefrequencies"+Configuration.seed+".txt", get_topple_frequencies(frec));
 		
 		
 		
-		Logger.append(Configuration.exper+"/stats.txt", get_flowtime_avg_std()+"\n"+get_throughput_avg_std(clock)+"\n"+"Makespan "+clock+"\n");
+		Logger.append(Configuration.exper+"/stats"+Configuration.seed+".txt", get_flowtime_avg_std()+"\n"+get_throughput_avg_std(clock)+"\n"+"Makespan "+clock+"\n");
 		
-		Logger.append(Configuration.exper+"/throughput.txt", get_throughput_frequencies(clock));
+		Logger.append(Configuration.exper+"/throughput"+Configuration.seed+".txt", get_throughput_frequencies(clock));
 		
 		
 	}
@@ -455,7 +478,7 @@ public class Sandpile extends Thread{
 				CommonState.setSeed(Configuration.seed);
 				
 				//Creating the directory for the experiment
-				Configuration.exper += "/"+Configuration.seed;
+				//Configuration.exper += "/"+Configuration.seed;
 				
 				(new File(Configuration.exper)).mkdirs();
 				
