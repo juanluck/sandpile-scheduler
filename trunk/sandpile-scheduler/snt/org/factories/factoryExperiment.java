@@ -19,7 +19,7 @@ public class factoryExperiment {
 		CommonState.setSeed(Configuration.seed);
 		
 		//Creating the directory for the experiment
-		Configuration.exper += "/"+Configuration.seed;
+		//Configuration.exper += "/"+Configuration.seed;
 		
 		(new File(Configuration.exper)).mkdirs();
 		

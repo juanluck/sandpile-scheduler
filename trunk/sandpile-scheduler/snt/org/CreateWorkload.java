@@ -3,6 +3,7 @@ import org.config.Configuration;
 import org.config.LoadProperties;
 import org.config.Logger;
 import org.config.Tasks;
+import org.utils.SinusoidalArrival;
 
 import random.CommonState;
 
@@ -62,6 +63,22 @@ public class CreateWorkload {
 				}
 
 			}
+		}
+		// --+ Sinusoidal: Creating a Workload with a sinusoidal arrival
+		else if(Configuration.tasksperbotmethod.equals("sinusoidal")){
+			
+						
+			for (int i=0;i<Configuration.b;i++){
+				int nr_of_tasks = SinusoidalArrival.nr_of_tasks(i);
+				for(int j=0;j<nr_of_tasks;j++){
+					
+					NDA[0].add(i,Double.parseDouble(runtime()));
+					NDA[1].add(i,Double.parseDouble(codesize()));
+					NDA[2].add(i,i);
+			}
+
+			}
+			
 		}
 		
 		return NDA;

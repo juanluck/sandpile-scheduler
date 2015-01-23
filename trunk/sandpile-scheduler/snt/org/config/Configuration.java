@@ -120,6 +120,13 @@ public class Configuration {
 	//Displaying with GraphStream
 		public static boolean display=true;
 		public static int pause=100;
+		
+	//Verbosity
+		//+ 0 do not display anything (to be used together with display=true)
+		//+ 1 print information in the standard output
+		//+ 2 in addition to 1, it also reports the final stats in the log directory
+		//+ 3 in addition to 2, it reports everything in the log directory
+		public static int verbosity=2;
 	
 
 	
@@ -222,7 +229,7 @@ public class Configuration {
 		display = Boolean.parseBoolean(lp.getProperty("display","false"));
 		pause = Integer.parseInt(lp.getProperty("pause","100"));
 		
-		
+		verbosity=Integer.valueOf(lp.getProperty("verbosity","2"));
 	}
 	
 	
