@@ -81,20 +81,6 @@ public class Sandpile extends Thread{
 			// Log files
 			logs(clock,throughput);
 			
-			// Log in the Standard output
-			if(Configuration.verbosity>0){
-				int nr_resources = 0;
-				for(int i = 0;i<sn.size();i++){
-					if (!sn.getProcessor(i).get_pile().isempty())
-						nr_resources++;
-				}
-				accumulated_energy +=nr_resources;
-				
-				Logger.append("", clock+","+new_workload+","+nr_resources+","+((nr_resources*1.0)/Configuration.q)+","+size_of_the_avalanche+","+accumulated_energy+","+current_flow_time+"\n");
-				size_of_the_avalanche = 0;
-				new_workload = 0;
-				
-			}
 			/*int max=0;
 			int totaltopple=0;
 			for(int i = 0;i<sn.size();i++){
@@ -132,6 +118,25 @@ public class Sandpile extends Thread{
 			for(int i = 0;i<sn.size();i++){
 				sn.getProcessor(i).get_pile().tic();
 			}
+			
+			// Log in the Standard output
+						if(Configuration.verbosity>0){
+							int nr_resources = 0;
+							if (!Configuration.sandpile){
+								nr_resources = sn.size();
+							}else{ // If the sandpile is working, we check who many processors are turned on
+								for(int i = 0;i<sn.size();i++){
+									if (!sn.getProcessor(i).get_pile().isempty())
+										nr_resources++;
+								}								
+							}
+							accumulated_energy +=nr_resources;
+							
+							Logger.append("", clock+","+new_workload+","+nr_resources+","+((nr_resources*1.0)/Configuration.q)+","+size_of_the_avalanche+","+accumulated_energy+","+current_flow_time+"\n");
+							size_of_the_avalanche = 0;
+							new_workload = 0;
+							
+						}
 
 			// After tic()
 			repaint();
