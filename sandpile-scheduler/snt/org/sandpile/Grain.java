@@ -7,7 +7,7 @@ import java.util.Random;
 import random.CommonState;
 
 public class Grain{
-	HashMap<Double, List<HashMap<String,Double>>> _grain;
+	//HashMap<Double, List<HashMap<String,Double>>> _grain;
 	
 	private double _runtime=1;
 	private double _codesize=0;
