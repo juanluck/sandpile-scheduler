@@ -119,7 +119,7 @@ public class Configuration {
 		
 	//Displaying with GraphStream
 		public static boolean display=true;
-		public static int pause=100;
+		public static int pause=10;
 		
 	//Verbosity
 		//+ 0 do not display anything (to be used together with display=true)

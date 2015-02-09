@@ -125,8 +125,8 @@ public class PileInNode {
 		//	return 0;
 		
 		int processedtask=0;
+		_processed_in_current_cycle.clear();
 		if (_grains.size()>0 || _proc_time>0){ // If there are grains in the pile or a process to process, otherwise it waits
-			_processed_in_current_cycle.clear();
 			while (_proc_time/(_speedup*1.0)<1.0 && _grains.size()>0){
 				Grain g = fifoget();
 				processedtask++;

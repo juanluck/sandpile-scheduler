@@ -157,10 +157,12 @@ public class Sandpile extends Thread{
 					emptypile=false;
 			}
 			
+			//System.err.println("T: "+nr_of_tasks);
+			
 			if(nr_of_tasks != 0)
 				current_flow_time /= (nr_of_tasks*1.0);
 			else
-				current_flow_time = -1;
+				current_flow_time = 0;
 			
 			// After tac()
 			repaint();

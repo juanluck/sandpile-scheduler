@@ -57,6 +57,7 @@ public class CreateWorkload {
 				NDA[1].add(i,Double.parseDouble(codesize()));
 				NDA[2].add(i,Double.parseDouble(arrival()));
 				for (int j=1;j<Configuration.tasksperbot;j++){
+					
 					NDA[0].add(i,Double.parseDouble(runtime()));
 					NDA[1].add(i,Double.parseDouble(codesize()));
 					NDA[2].add(i,Double.parseDouble(arrival()));
